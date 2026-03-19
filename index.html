@@ -442,7 +442,7 @@ const API_URL='https://script.google.com/macros/s/AKfycbwsGJ0HI7smnWk-3Cpcno6BJb
 let session=null, allAccounts=[], activeFilter='All', activeAccount=null, selectedOutcome='';
 
 async function api(p){p.client_id=p.clientId||CLIENT_ID;p.token=session?.token;try{const r=await fetch(API_URL+'?'+new URLSearchParams(p));return await r.json();}catch(e){return{success:false,error:e.message};}}
-async function apiPost(action,body){body.clientId=CLIENT_ID;body.token=session?.token;body.action=action;try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}catch(e){return{success:false,error:e.message};}}
+async function apiPost(action,body){body.client_id=CLIENT_ID;body.token=session?.token;body.action=action;try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}catch(e){return{success:false,error:e.message};}}
 
 async function doLogin(){
   const city=document.getElementById('loginCity').value.trim();
