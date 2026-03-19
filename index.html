@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>VOA Telecaller Console</title>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:        #f8f9fb;
+  --bg2:       #ffffff;
+  --bg3:       #f1f4f8;
+  --card:      #ffffff;
+  --border:    #e4e8ef;
+  --border2:   #d0d7e3;
+  --accent:    #f97316;
+  --accent-lt: #fff4ed;
+  --accent-dk: #ea6c0a;
+  --blue:      #3b82f6;
+  --blue-lt:   #eff6ff;
+  --green:     #16a34a;
+  --green-lt:  #f0fdf4;
+  --red:       #dc2626;
+  --red-lt:    #fef2f2;
+  --amber:     #d97706;
+  --amber-lt:  #fffbeb;
+  --purple:    #7c3aed;
+  --purple-lt: #f5f3ff;
+  --text:      #0f172a;
+  --text2:     #475569;
+  --text3:     #94a3b8;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow:    0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
+  --radius:    14px;
+  --font-head: 'Sora', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --font-body: 'Plus Jakarta Sans', sans-serif;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+body { background:var(--bg); color:var(--text); font-family:var(--font-body); min-height:100vh; overflow-x:hidden; }
+
+/* HEADER */
+.header {
+  background:var(--bg2); border-bottom:1px solid var(--border);
+  padding:0 16px; height:58px;
+  display:flex; align-items:center; justify-content:space-between;
+  position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm);
+}
+.header-brand { display:flex; align-items:center; gap:10px; }
+.brand-logo {
+  width:36px; height:36px; background:var(--accent); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-head); font-weight:800; font-size:13px; color:#fff;
+  box-shadow:0 2px 8px rgba(249,115,22,.3);
+}
+.brand-name { font-family:var(--font-head); font-size:17px; font-weight:700; color:var(--text); }
+.brand-role {
+  font-family:var(--font-mono); font-size:10px; color:var(--accent);
+  background:var(--accent-lt); padding:3px 9px; border-radius:20px;
+  border:1px solid rgba(249,115,22,.2); letter-spacing:.5px;
+}
+.header-right { display:flex; align-items:center; gap:8px; }
+.staff-badge {
+  font-family:var(--font-mono); font-size:11px; color:var(--text2);
+  background:var(--bg3); padding:5px 10px; border-radius:8px; border:1px solid var(--border);
+}
+.logout-btn {
+  background:none; border:1px solid var(--border); border-radius:8px;
+  color:var(--text3); cursor:pointer; padding:5px 10px;
+  font-size:12px; font-family:var(--font-body); transition:all .2s;
+}
+.logout-btn:hover { color:var(--red); border-color:var(--red); background:var(--red-lt); }
+
+/* LOGIN */
+.login-screen {
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(145deg, #fff4ed 0%, #f8f9fb 50%, #fff 100%);
+  padding:24px;
+}
+.login-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:24px; padding:44px 36px;
+  width:100%; max-width:390px;
+  box-shadow:var(--shadow-lg); animation:fadeUp .4s ease;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+.login-logo-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:36px; }
+.login-logo {
+  width:72px; height:72px;
+  background:linear-gradient(135deg, var(--accent), var(--accent-dk));
+  border-radius:20px;
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-head); font-weight:800; font-size:26px; color:#fff;
+  box-shadow:0 8px 28px rgba(249,115,22,.28);
+}
+.login-title { font-family:var(--font-head); font-size:24px; font-weight:700; color:var(--text); }
+.login-sub { font-size:13px; color:var(--text3); text-align:center; }
+.form-group { margin-bottom:18px; }
+.form-label { font-size:11px; font-family:var(--font-mono); letter-spacing:1px; color:var(--text3); margin-bottom:8px; display:block; text-transform:uppercase; }
+.form-input, .form-select {
+  width:100%; background:var(--bg3); border:1.5px solid var(--border);
+  border-radius:12px; padding:13px 15px; color:var(--text);
+  font-family:var(--font-body); font-size:15px; outline:none;
+  transition:all .2s; -webkit-appearance:none;
+}
+.form-input:focus, .form-select:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.btn-login {
+  width:100%; padding:15px;
+  background:linear-gradient(135deg, var(--accent), var(--accent-dk));
+  border:none; border-radius:14px; color:#fff;
+  font-family:var(--font-head); font-size:17px; font-weight:700;
+  cursor:pointer; box-shadow:0 4px 20px rgba(249,115,22,.3);
+  transition:all .2s; margin-top:8px;
+}
+.btn-login:hover { transform:translateY(-1px); box-shadow:0 8px 28px rgba(249,115,22,.4); }
+.btn-login:active { transform:scale(.98); }
+.login-error {
+  background:var(--red-lt); border:1px solid rgba(220,38,38,.2);
+  border-radius:10px; padding:11px 14px;
+  font-size:13px; color:var(--red); margin-top:12px; display:none;
+}
+
+/* DASHBOARD */
+.dash-wrap { padding:16px; }
+.dash-greeting { font-family:var(--font-head); font-size:20px; font-weight:700; color:var(--text); margin-bottom:2px; }
+.dash-date { font-size:12px; color:var(--text3); font-family:var(--font-mono); margin-bottom:16px; }
+.dash-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:4px; }
+.dash-card {
+  background:var(--card); border:1px solid var(--border);
+  border-radius:var(--radius); padding:16px;
+  box-shadow:var(--shadow-sm); position:relative; overflow:hidden;
+}
+.dash-card-icon { font-size:20px; margin-bottom:8px; }
+.dash-card-val { font-family:var(--font-head); font-size:30px; font-weight:800; line-height:1; }
+.dash-card.orange .dash-card-val { color:var(--accent); }
+.dash-card.green  .dash-card-val { color:var(--green); }
+.dash-card.blue   .dash-card-val { color:var(--blue); }
+.dash-card.red    .dash-card-val { color:var(--red); }
+.dash-card-lbl { font-size:11px; color:var(--text3); margin-top:4px; font-weight:500; }
+
+/* FILTER CHIPS */
+.filter-row { display:flex; gap:8px; overflow-x:auto; padding:12px 16px; scrollbar-width:none; }
+.filter-row::-webkit-scrollbar { display:none; }
+.chip {
+  flex-shrink:0; padding:7px 14px; border-radius:20px;
+  font-size:12px; font-family:var(--font-mono); letter-spacing:.3px;
+  border:1.5px solid var(--border); background:var(--card);
+  color:var(--text2); cursor:pointer; transition:all .2s;
+  white-space:nowrap; box-shadow:var(--shadow-sm);
+}
+.chip.active { background:var(--accent-lt); border-color:rgba(249,115,22,.35); color:var(--accent); font-weight:600; }
+
+/* SEARCH */
+.search-wrap { padding:0 16px 12px; }
+.search-box {
+  display:flex; align-items:center; gap:10px;
+  background:var(--card); border:1.5px solid var(--border);
+  border-radius:12px; padding:11px 14px;
+  box-shadow:var(--shadow-sm); transition:all .2s;
+}
+.search-box:focus-within { border-color:var(--accent); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
+.search-input { flex:1; background:none; border:none; outline:none; color:var(--text); font-family:var(--font-body); font-size:14px; }
+.search-input::placeholder { color:var(--text3); }
+
+/* ACCOUNT LIST */
+.list-section { padding:0 16px; }
+.list-count { font-size:11px; color:var(--text3); font-family:var(--font-mono); margin-bottom:10px; }
+.account-card {
+  background:var(--card); border:1.5px solid var(--border);
+  border-radius:var(--radius); padding:16px; margin-bottom:10px;
+  cursor:pointer; transition:all .2s; box-shadow:var(--shadow-sm);
+  animation:slideIn .3s ease;
+}
+@keyframes slideIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
+.account-card:hover  { border-color:rgba(249,115,22,.4); box-shadow:var(--shadow); }
+.account-card:active { transform:scale(.99); }
+.card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
+.card-accno { font-family:var(--font-head); font-size:16px; font-weight:700; color:var(--accent); }
+.card-name  { font-size:15px; font-weight:600; color:var(--text); margin-bottom:2px; }
+.card-phone { font-family:var(--font-mono); font-size:13px; color:var(--green); font-weight:500; }
+.card-addr  { font-size:12px; color:var(--text2); margin-top:6px; line-height:1.5; }
+.status-badge {
+  font-family:var(--font-mono); font-size:9px; letter-spacing:.5px;
+  padding:4px 9px; border-radius:20px; white-space:nowrap; font-weight:600;
+}
+.s-fresh    { background:#eff6ff; color:var(--blue); border:1px solid #bfdbfe; }
+.s-called   { background:var(--green-lt); color:var(--green); border:1px solid #86efac; }
+.s-appt     { background:var(--green-lt); color:var(--green); border:1px solid #86efac; }
+.s-rescheduled { background:var(--amber-lt); color:var(--amber); border:1px solid #fde68a; }
+.s-notvst   { background:var(--amber-lt); color:var(--amber); border:1px solid #fde68a; }
+.s-issue    { background:var(--red-lt); color:var(--red); border:1px solid #fecaca; }
+.s-collected{ background:var(--purple-lt); color:var(--purple); border:1px solid #ddd6fe; }
+.s-default  { background:var(--bg3); color:var(--text2); border:1px solid var(--border); }
+.card-footer {
+  display:flex; gap:8px; align-items:center;
+  margin-top:10px; padding-top:10px; border-top:1px solid var(--border);
+}
+.strike-dot { width:9px; height:9px; border-radius:50%; background:var(--red); flex-shrink:0; }
+.card-appt  { font-size:11px; color:var(--green); font-family:var(--font-mono); }
+.card-area  { font-size:11px; color:var(--text3); margin-left:auto; font-family:var(--font-mono); }
+.card-action-row { display:flex; gap:8px; margin-top:10px; }
+.btn-sm {
+  flex:1; padding:9px 10px; border-radius:10px;
+  font-size:12px; font-family:var(--font-head); font-weight:600;
+  border:1.5px solid; cursor:pointer; transition:all .2s;
+  display:flex; align-items:center; justify-content:center; gap:4px;
+}
+.btn-call { background:var(--green-lt); color:var(--green); border-color:#86efac; }
+.btn-wa   { background:var(--green-lt); color:#15803d; border-color:#86efac; }
+.btn-log  { background:var(--accent-lt); color:var(--accent); border-color:rgba(249,115,22,.3); }
+.btn-sm:active { transform:scale(.96); }
+
+/* BOTTOM SHEET */
+.sheet-overlay {
+  position:fixed; inset:0; background:rgba(15,23,42,.4);
+  z-index:200; opacity:0; pointer-events:none; transition:opacity .3s;
+  backdrop-filter:blur(4px);
+}
+.sheet-overlay.open { opacity:1; pointer-events:all; }
+.bottom-sheet {
+  position:fixed; bottom:0; left:0; right:0; z-index:201;
+  background:var(--card); border-radius:28px 28px 0 0;
+  border-top:1px solid var(--border); box-shadow:0 -8px 40px rgba(0,0,0,.1);
+  transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1);
+  max-height:92vh; display:flex; flex-direction:column;
+}
+.bottom-sheet.open { transform:translateY(0); }
+.sheet-handle { display:flex; justify-content:center; padding:14px 0 6px; }
+.sheet-handle-bar { width:40px; height:4px; background:var(--border2); border-radius:2px; }
+.sheet-header {
+  padding:0 20px 16px; display:flex; justify-content:space-between; align-items:center;
+  border-bottom:1px solid var(--border);
+}
+.sheet-title { font-family:var(--font-head); font-size:20px; font-weight:700; color:var(--text); }
+.sheet-close {
+  width:32px; height:32px; background:var(--bg3); border:1px solid var(--border);
+  border-radius:50%; display:flex; align-items:center; justify-content:center;
+  cursor:pointer; font-size:14px; color:var(--text2); transition:all .2s;
+}
+.sheet-close:hover { background:var(--red-lt); color:var(--red); border-color:rgba(220,38,38,.3); }
+.sheet-body { flex:1; overflow-y:auto; padding:20px 20px 36px; }
+
+/* DETAIL */
+.detail-accno { font-family:var(--font-head); font-size:22px; font-weight:800; color:var(--accent); margin-bottom:2px; }
+.detail-name  { font-size:18px; font-weight:700; color:var(--text); margin-bottom:14px; }
+.detail-batch {
+  display:inline-block; font-family:var(--font-mono); font-size:11px;
+  background:var(--accent-lt); color:var(--accent);
+  padding:4px 12px; border-radius:20px; border:1px solid rgba(249,115,22,.2); margin-bottom:20px;
+}
+.detail-row { display:flex; gap:10px; align-items:flex-start; margin-bottom:12px; }
+.detail-icon { width:30px; flex-shrink:0; font-size:18px; }
+.detail-val { font-size:14px; color:var(--text); line-height:1.5; }
+.detail-val-sub { font-size:11px; color:var(--text3); margin-top:2px; }
+.detail-phone-big { font-family:var(--font-mono); font-size:22px; font-weight:600; color:var(--green); letter-spacing:1px; }
+.detail-section-title {
+  font-family:var(--font-mono); font-size:10px; color:var(--text3);
+  letter-spacing:1.5px; text-transform:uppercase;
+  margin:20px 0 12px; padding-top:20px; border-top:1px solid var(--border);
+}
+.strikes-row { display:flex; gap:6px; align-items:center; }
+.strike-indicator { width:14px; height:14px; border-radius:50%; border:2px solid var(--border2); background:var(--bg3); }
+.strike-indicator.filled { background:var(--red); border-color:var(--red); }
+.strike-text { font-size:12px; color:var(--text3); font-family:var(--font-mono); margin-left:4px; }
+.detail-action-row { display:flex; gap:10px; margin-top:20px; }
+.btn-detail {
+  flex:1; padding:14px; border-radius:14px;
+  font-family:var(--font-head); font-size:14px; font-weight:700;
+  border:none; cursor:pointer; transition:all .2s;
+  display:flex; align-items:center; justify-content:center; gap:6px;
+}
+.btn-call-big { background:var(--green); color:#fff; box-shadow:0 4px 16px rgba(22,163,74,.2); }
+.btn-wa-big   { background:#25D366; color:#fff; box-shadow:0 4px 16px rgba(37,211,102,.2); }
+.btn-log-big  { background:var(--accent); color:#fff; box-shadow:0 4px 16px rgba(249,115,22,.2); flex:2; }
+.btn-detail:active { transform:scale(.97); }
+
+/* LOG FORM */
+.log-form-title { font-family:var(--font-head); font-size:17px; font-weight:700; color:var(--text); margin-bottom:16px; }
+.outcome-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:20px; }
+.outcome-btn {
+  padding:13px 8px; border-radius:12px;
+  border:1.5px solid var(--border); background:var(--bg3);
+  color:var(--text2); cursor:pointer; transition:all .2s;
+  text-align:center; font-size:13px; font-family:var(--font-body); font-weight:600;
+}
+.outcome-btn:hover { border-color:var(--border2); background:var(--card); }
+.outcome-btn.sel-Called         { background:var(--green-lt); border-color:#86efac; color:var(--green); }
+.outcome-btn.sel-Appt\ Fixed    { background:var(--blue-lt); border-color:#93c5fd; color:var(--blue); }
+.outcome-btn.sel-Rescheduled    { background:var(--amber-lt); border-color:#fde68a; color:var(--amber); }
+.outcome-btn.sel-Not\ Reachable { background:var(--bg3); border-color:var(--border2); color:var(--text2); }
+.outcome-btn.sel-Wrong\ Number  { background:var(--red-lt); border-color:#fecaca; color:var(--red); }
+.outcome-btn.sel-DND            { background:var(--red-lt); border-color:#fecaca; color:var(--red); }
+.appt-wrap { margin-bottom:16px; display:none; }
+.textarea-field {
+  width:100%; background:var(--bg3); border:1.5px solid var(--border);
+  border-radius:12px; padding:13px 15px; color:var(--text);
+  font-family:var(--font-body); font-size:14px; outline:none;
+  resize:none; min-height:80px; transition:all .2s;
+}
+.textarea-field:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(249,115,22,.08); }
+.btn-submit-log {
+  width:100%; padding:15px; border-radius:14px;
+  background:linear-gradient(135deg, var(--accent), var(--accent-dk));
+  border:none; color:#fff;
+  font-family:var(--font-head); font-size:17px; font-weight:700;
+  cursor:pointer; box-shadow:0 4px 20px rgba(249,115,22,.25);
+  transition:all .2s; margin-top:16px;
+}
+.btn-submit-log:hover { transform:translateY(-1px); }
+.btn-submit-log:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+
+/* MISC */
+.empty-state { text-align:center; padding:60px 20px; }
+.empty-icon  { font-size:48px; margin-bottom:12px; opacity:.4; }
+.empty-text  { font-size:15px; color:var(--text2); font-weight:600; }
+.empty-sub   { font-size:13px; color:var(--text3); margin-top:6px; }
+.loading-overlay {
+  position:fixed; inset:0; background:rgba(248,249,251,.88);
+  z-index:300; display:none; align-items:center; justify-content:center; flex-direction:column; gap:14px;
+}
+.loading-overlay.show { display:flex; }
+.spinner {
+  width:40px; height:40px;
+  border:3px solid var(--border); border-top-color:var(--accent);
+  border-radius:50%; animation:spin .7s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg)} }
+.loading-text { font-family:var(--font-mono); font-size:13px; color:var(--text2); }
+.toast {
+  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+  z-index:400; background:var(--text); color:#fff;
+  border-radius:14px; padding:13px 22px;
+  font-size:14px; font-weight:500; white-space:nowrap;
+  box-shadow:var(--shadow-lg); transition:transform .3s cubic-bezier(.4,0,.2,1); pointer-events:none;
+}
+.toast.show    { transform:translateX(-50%) translateY(0); }
+.toast.success { background:var(--green); }
+.toast.error   { background:var(--red); }
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loader">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loaderText">Loading...</div>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div class="login-screen" id="loginScreen">
+  <div class="login-card">
+    <div class="login-logo-wrap">
+      <div class="login-logo">VOA</div>
+      <div class="login-title">Telecaller Console</div>
+      <div class="login-sub">Vibrant Owl Agencies — Recovery Operations</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">City</label>
+      <select class="form-select" id="loginCity">
+        <option value="CBE">Coimbatore (CBE)</option>
+        <option value="CHN">Chennai (CHN)</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Staff ID</label>
+      <input class="form-input" id="loginStaffId" type="text" placeholder="e.g. TC_001" autocomplete="off">
+    </div>
+    <div class="form-group">
+      <label class="form-label">PIN</label>
+      <input class="form-input" id="loginPin" type="password" inputmode="numeric" placeholder="4-digit PIN" maxlength="4">
+    </div>
+    <div class="login-error" id="loginError"></div>
+    <button class="btn-login" onclick="doLogin()">Login →</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app" id="app" style="display:none;">
+  <div class="header">
+    <div class="header-brand">
+      <div class="brand-logo">VOA</div>
+      <span class="brand-name">VOA</span>
+      <span class="brand-role">TELECALLER</span>
+    </div>
+    <div class="header-right">
+      <div class="staff-badge" id="headerBadge">TC_000</div>
+      <button class="logout-btn" onclick="doLogout()">✕</button>
+    </div>
+  </div>
+
+  <div class="dash-wrap">
+    <div class="dash-greeting" id="dashGreeting">Good morning</div>
+    <div class="dash-date" id="dashDate">—</div>
+    <div class="dash-cards">
+      <div class="dash-card orange"><div class="dash-card-icon">📋</div><div class="dash-card-val" id="cntTotal">—</div><div class="dash-card-lbl">My Accounts</div></div>
+      <div class="dash-card green"><div class="dash-card-icon">📅</div><div class="dash-card-val" id="cntAppt">—</div><div class="dash-card-lbl">Appts Fixed</div></div>
+      <div class="dash-card blue"><div class="dash-card-icon">📞</div><div class="dash-card-val" id="cntCalled">—</div><div class="dash-card-lbl">Calls Today</div></div>
+      <div class="dash-card red"><div class="dash-card-icon">⚡</div><div class="dash-card-val" id="cntPending">—</div><div class="dash-card-lbl">Still Pending</div></div>
+    </div>
+  </div>
+
+  <div class="filter-row">
+    <div class="chip active" onclick="setFilter('All',this)">All</div>
+    <div class="chip" onclick="setFilter('Fresh',this)">Fresh</div>
+    <div class="chip" onclick="setFilter('Called',this)">Called</div>
+    <div class="chip" onclick="setFilter('Appt Fixed',this)">Appt Fixed</div>
+    <div class="chip" onclick="setFilter('Rescheduled',this)">Rescheduled</div>
+    <div class="chip" onclick="setFilter('Not Reachable',this)">Not Reachable</div>
+  </div>
+
+  <div class="search-wrap">
+    <div class="search-box">
+      <span style="color:var(--text3);font-size:16px;">🔍</span>
+      <input class="search-input" id="searchInput" placeholder="Search account / name / area…" oninput="renderList()">
+    </div>
+  </div>
+
+  <div class="list-section">
+    <div class="list-count" id="listCount"></div>
+    <div id="accountList"></div>
+    <div class="empty-state" id="emptyState" style="display:none;">
+      <div class="empty-icon">🔍</div>
+      <div class="empty-text">No accounts found</div>
+      <div class="empty-sub">Try a different filter or search</div>
+    </div>
+  </div>
+</div>
+
+<div class="sheet-overlay" id="overlay" onclick="closeSheet()"></div>
+<div class="bottom-sheet" id="mainSheet">
+  <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
+  <div class="sheet-header">
+    <div class="sheet-title" id="sheetTitle">Account</div>
+    <div class="sheet-close" onclick="closeSheet()">✕</div>
+  </div>
+  <div class="sheet-body" id="sheetBody"></div>
+</div>
+
+<script>
+const API_URL='YOUR_WEB_APP_URL_HERE', CLIENT_ID='LIVARA_CBE';
+let session=null, allAccounts=[], activeFilter='All', activeAccount=null, selectedOutcome='';
+
+async function api(p){p.clientId=p.clientId||CLIENT_ID;p.token=session?.token;try{const r=await fetch(API_URL+'?'+new URLSearchParams(p));return await r.json();}catch(e){return{success:false,error:e.message};}}
+async function apiPost(action,body){body.clientId=CLIENT_ID;body.token=session?.token;body.action=action;try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}catch(e){return{success:false,error:e.message};}}
+
+async function doLogin(){
+  const city=document.getElementById('loginCity').value.trim();
+  const staffId=document.getElementById('loginStaffId').value.trim().toUpperCase();
+  const pin=document.getElementById('loginPin').value.trim();
+  document.getElementById('loginError').style.display='none';
+  if(!staffId||!pin){showErr('Enter Staff ID and PIN');return;}
+  showLoader('Authenticating...');
+  const res=await api({action:'login',city,staffId,pin});
+  hideLoader();
+  if(!res.success){showErr(res.error||'Login failed');return;}
+  if(res.data.role!=='TELECALLER'){showErr('Access denied — Telecaller login only');return;}
+  session=res.data; startApp();
+}
+function showErr(m){const e=document.getElementById('loginError');e.textContent=m;e.style.display='block';}
+
+function startApp(){
+  document.getElementById('loginScreen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('headerBadge').textContent=session.staffId+' · '+session.city;
+  const h=new Date().getHours();
+  document.getElementById('dashGreeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+(session.staffName||session.staffId);
+  document.getElementById('dashDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  loadData();
+}
+
+async function loadData(){
+  showLoader('Loading your accounts...');
+  const[accRes,dashRes]=await Promise.all([api({action:'get_tc_accounts',city:session.city,staffId:session.staffId}),api({action:'get_tc_dashboard',city:session.city,staffId:session.staffId})]);
+  hideLoader();
+  allAccounts=accRes.success?(accRes.data||[]):demoAccounts();
+  renderList();
+  if(dashRes.success){const d=dashRes.data;document.getElementById('cntTotal').textContent=d.total??allAccounts.length;document.getElementById('cntAppt').textContent=d.appts??0;document.getElementById('cntCalled').textContent=d.callsToday??0;document.getElementById('cntPending').textContent=d.pending??0;}
+  else{document.getElementById('cntTotal').textContent=allAccounts.length;['cntAppt','cntCalled','cntPending'].forEach(id=>document.getElementById(id).textContent='—');}
+}
+
+function setFilter(f,el){activeFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderList();}
+
+function renderList(){
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  const list=allAccounts.filter(a=>{
+    if(activeFilter!=='All'&&a.status!==activeFilter)return false;
+    if(q){const hay=[a.accountNo,a.name,a.mobile,a.area,a.address].join(' ').toLowerCase();if(!hay.includes(q))return false;}
+    return true;
+  });
+  const container=document.getElementById('accountList'),empty=document.getElementById('emptyState');
+  document.getElementById('listCount').textContent=list.length+' account'+(list.length!==1?'s':'');
+  if(!list.length){container.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  container.innerHTML=list.map(a=>`
+    <div class="account-card" onclick="openDetail('${a.accountNo}')">
+      <div class="card-top">
+        <div>
+          <div class="card-accno">${a.accountNo}</div>
+          <div class="card-name">${a.name||'—'}</div>
+          <div class="card-phone">📞 ${a.mobile||'—'}</div>
+        </div>
+        <span class="status-badge ${sClass(a.status)}">${a.status||'FRESH'}</span>
+      </div>
+      <div class="card-addr">📍 ${a.address||'—'}</div>
+      <div class="card-footer">
+        ${Array.from({length:3}).map((_,i)=>`<div class="strike-dot" style="${i<(a.strikeCount||0)?'':'background:transparent;border:2px solid var(--border2);'}"></div>`).join('')}
+        ${a.apptDate?`<span class="card-appt">🗓 ${a.apptDate}</span>`:''}
+        <span class="card-area">${a.area||''}</span>
+      </div>
+      <div class="card-action-row">
+        <button class="btn-sm btn-call" onclick="event.stopPropagation();callNum('${a.mobile}')">📞 Call</button>
+        <button class="btn-sm btn-wa"   onclick="event.stopPropagation();openWA('${a.mobile}','${a.name}','${a.accountNo}')">💬 WA</button>
+        <button class="btn-sm btn-log"  onclick="event.stopPropagation();openLog('${a.accountNo}')">✏️ Log Call</button>
+      </div>
+    </div>`).join('');
+}
+
+function sClass(s){return{'Fresh':'s-fresh','Called':'s-called','Appt Fixed':'s-appt','Rescheduled':'s-rescheduled','Not Visited':'s-notvst','Not Reachable':'s-notvst','Issue':'s-issue','Collected':'s-collected'}[s]||'s-default';}
+
+function openDetail(accNo){
+  const a=allAccounts.find(x=>x.accountNo===accNo);if(!a)return;activeAccount=a;
+  document.getElementById('sheetTitle').textContent=a.accountNo;
+  document.getElementById('sheetBody').innerHTML=`
+    <div class="detail-accno">${a.accountNo}</div>
+    <div class="detail-name">${a.name||'—'}</div>
+    <span class="detail-batch">${a.batchNo||'—'}</span>
+    <div class="detail-row"><div class="detail-icon">📞</div><div><div class="detail-phone-big">${a.mobile||'—'}</div><div class="detail-val-sub">Customer Mobile</div></div></div>
+    <div class="detail-row"><div class="detail-icon">📍</div><div><div class="detail-val">${a.address||'—'}</div><div class="detail-val-sub">${a.area||''} · ${a.city||''}</div></div></div>
+    ${a.apptDate?`<div class="detail-row"><div class="detail-icon">🗓</div><div><div class="detail-val" style="color:var(--green);font-weight:600;">${a.apptDate}</div><div class="detail-val-sub">Appointment Date</div></div></div>`:''}
+    ${a.execRemark?`<div class="detail-row"><div class="detail-icon">🗒</div><div><div class="detail-val">${a.execRemark}</div><div class="detail-val-sub">Exec Remark</div></div></div>`:''}
+    <div class="detail-section-title">Strike Status</div>
+    <div class="strikes-row">
+      ${Array.from({length:3}).map((_,i)=>`<div class="strike-indicator ${i<(a.strikeCount||0)?'filled':''}"></div>`).join('')}
+      <span class="strike-text">${a.strikeCount||0} / 3 strikes</span>
+    </div>
+    <div class="detail-action-row">
+      <button class="btn-detail btn-call-big" onclick="callNum('${a.mobile}')">📞 Call</button>
+      <button class="btn-detail btn-wa-big"   onclick="openWA('${a.mobile}','${a.name}','${a.accountNo}')">💬 WA</button>
+      <button class="btn-detail btn-log-big"  onclick="openLog('${a.accountNo}')">✏️ Log Call</button>
+    </div>`;
+  openSheet();
+}
+
+function openLog(accNo){
+  const a=allAccounts.find(x=>x.accountNo===accNo);if(!a)return;activeAccount=a;selectedOutcome='';
+  document.getElementById('sheetTitle').textContent='Log Call — '+accNo;
+  const outcomes=['Called','Appt Fixed','Rescheduled','Not Reachable','Wrong Number','DND'];
+  document.getElementById('sheetBody').innerHTML=`
+    <div class="log-form-title">What happened on this call?</div>
+    <div class="outcome-grid">${outcomes.map(o=>`<button class="outcome-btn" onclick="selOutcome('${o}',this)">${o}</button>`).join('')}</div>
+    <div class="appt-wrap" id="apptWrap"><label class="form-label">Appointment Date</label><input type="date" class="form-input" id="apptDate"></div>
+    <div class="form-group"><label class="form-label">TC Remark</label><textarea class="textarea-field" id="tcRemark" placeholder="Notes about this call…"></textarea></div>
+    <button class="btn-submit-log" id="btnSubmit" onclick="submitLog()" disabled>Submit Call Log</button>`;
+  openSheet();
+}
+
+function selOutcome(o,el){
+  selectedOutcome=o;
+  document.querySelectorAll('.outcome-btn').forEach(b=>b.className='outcome-btn');
+  el.className='outcome-btn sel-'+o;
+  document.getElementById('btnSubmit').disabled=false;
+  const w=document.getElementById('apptWrap');if(w)w.style.display=o==='Appt Fixed'?'block':'none';
+}
+
+async function submitLog(){
+  if(!selectedOutcome)return;
+  const remark=document.getElementById('tcRemark').value.trim();
+  const apptDate=selectedOutcome==='Appt Fixed'?document.getElementById('apptDate').value:'';
+  showLoader('Logging call...');
+  const res=await apiPost('log_call',{city:session.city,staffId:session.staffId,accountNo:activeAccount.accountNo,outcome:selectedOutcome,tcRemark:remark,apptDate});
+  hideLoader();
+  if(res.success){
+    toast('Call logged — '+selectedOutcome,'success');
+    const idx=allAccounts.findIndex(x=>x.accountNo===activeAccount.accountNo);
+    if(idx!==-1){allAccounts[idx].status=selectedOutcome;if(apptDate)allAccounts[idx].apptDate=apptDate;}
+    renderList();closeSheet();
+  }else{toast(res.error||'Failed to log call','error');}
+}
+
+function openSheet(){document.getElementById('overlay').classList.add('open');document.getElementById('mainSheet').classList.add('open');document.body.style.overflow='hidden';}
+function closeSheet(){document.getElementById('overlay').classList.remove('open');document.getElementById('mainSheet').classList.remove('open');document.body.style.overflow='';}
+function callNum(m){if(m)window.location.href='tel:'+m;}
+function openWA(m,name,accNo){if(!m)return;const num='91'+m.replace(/\D/g,'');const msg=encodeURIComponent('Hi '+name+', this is regarding your ACT Fiber router (Account: '+accNo+'). Kindly arrange for return.');window.open('https://wa.me/'+num+'?text='+msg,'_blank');}
+function showLoader(t){document.getElementById('loaderText').textContent=t||'Loading...';document.getElementById('loader').classList.add('show');}
+function hideLoader(){document.getElementById('loader').classList.remove('show');}
+let _tt;function toast(msg,type){clearTimeout(_tt);const el=document.getElementById('toast');el.textContent=msg;el.className='toast '+(type||'');requestAnimationFrame(()=>el.classList.add('show'));_tt=setTimeout(()=>el.classList.remove('show'),3000);}
+function doLogout(){session=null;allAccounts=[];document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';closeSheet();}
+function demoAccounts(){return[{accountNo:'ACT001234',name:'Rajesh Kumar',mobile:'9876543210',address:'12 RS Puram Main Rd',area:'RS Puram',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:''},{accountNo:'ACT005678',name:'Priya Suresh',mobile:'9876501234',address:'45 Tatabad Cross St',area:'Tatabad',city:'CBE',status:'Called',batchNo:'VOA_MAR_2026_1',strikeCount:1,apptDate:''},{accountNo:'ACT009012',name:'Murugan Selvam',mobile:'9843210987',address:'8 Gandhipuram Ring Rd',area:'Gandhipuram',city:'CBE',status:'Appt Fixed',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'14 Mar 2026'},{accountNo:'ACT013456',name:'Kavitha Rajan',mobile:'9791234567',address:'67 Peelamedu Lake View',area:'Peelamedu',city:'CBE',status:'Rescheduled',batchNo:'VOA_MAR_2026_1',strikeCount:2,apptDate:''},{accountNo:'ACT017890',name:'Anand Krishnan',mobile:'9865432109',address:'23 Saibaba Colony',area:'Saibaba Colony',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:''}];}
+document.getElementById('loginPin').addEventListener('keyup',e=>{if(e.key==='Enter')doLogin();});
+</script>
+</body>
+</html>
