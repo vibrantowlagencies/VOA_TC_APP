@@ -438,7 +438,7 @@ body { background:var(--bg); color:var(--text); font-family:var(--font-body); mi
 </div>
 
 <script>
-const API_URL='YOUR_WEB_APP_URL_HERE', CLIENT_ID='LIVARA_CBE';
+const API_URL='https://script.google.com/macros/s/AKfycbwsGJ0HI7smnWk-3Cpcno6BJbRwbWHe3ZaAhPavTmHE4IrIG9Kk0t_7mQqh9x_fTHnI/exec', CLIENT_ID='LIVARA_CBE';
 let session=null, allAccounts=[], activeFilter='All', activeAccount=null, selectedOutcome='';
 
 async function api(p){p.clientId=p.clientId||CLIENT_ID;p.token=session?.token;try{const r=await fetch(API_URL+'?'+new URLSearchParams(p));return await r.json();}catch(e){return{success:false,error:e.message};}}
