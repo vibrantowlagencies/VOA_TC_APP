@@ -446,8 +446,26 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 // ══ CONFIG ══
 const API_URL='https://script.google.com/macros/s/AKfycbwsGJ0HI7smnWk-3Cpcno6BJbRwbWHe3ZaAhPavTmHE4IrIG9Kk0t_7mQqh9x_fTHnI/exec';
 const CLIENT_ID='LIVARA_CBE';
-const TC_TARGET=30;
-const TC_RATE=300;
+
+// ══ LIVE INCENTIVE CONFIG (loaded from API on login) ══
+let LIVE_CONFIG = null;
+// These are fallback defaults — overridden by API response on login
+let TC_TARGET = 30;
+let TC_RATE   = 300;
+
+async function loadIncentiveConfig() {
+  try {
+    const res = await api({action:'get_incentive_config', city:session.city, staffId:session.staffId});
+    if (res.success && res.data) {
+      LIVE_CONFIG = res.data;
+      TC_TARGET   = res.data.tcTarget    || 30;
+      TC_RATE     = res.data.tcRate      || 300;
+      console.log('Incentive config loaded — TC target:', TC_TARGET, 'rate:', TC_RATE);
+    }
+  } catch(e) {
+    console.warn('Could not load incentive config, using defaults:', e.message);
+  }
+}
 
 // ══ STAFF NAME LOOKUP ══
 const STAFF_NAMES={
@@ -467,7 +485,27 @@ let session=null, allAccounts=[], activeFilter='All', activeAccount=null, select
 
 // ══ API ══
 async function api(p){p.client_id=p.client_id||CLIENT_ID;p.token=session?.token;try{const r=await fetch(API_URL+'?'+new URLSearchParams(p));return await r.json();}catch(e){return{success:false,error:e.message};}}
-async function apiPost(action,body){body.client_id=CLIENT_ID;body.token=session?.token;body.action=action;try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}catch(e){return{success:false,error:e.message};}}
+async function apiPost(action,body){
+  body.client_id=CLIENT_ID;
+  body.token=session?.token;
+  body.action=action;
+  // FIX: text/plain avoids CORS preflight on Google Apps Script
+  try{
+    const r=await fetch(API_URL,{
+      method:'POST',
+      headers:{'Content-Type':'text/plain;charset=utf-8'},
+      body:JSON.stringify(body)
+    });
+    return await r.json();
+  }catch(e){
+    console.warn('POST failed, retrying as GET:',e.message);
+    try{
+      const p=Object.assign({},body);
+      const r=await fetch(API_URL+'?'+new URLSearchParams(p));
+      return await r.json();
+    }catch(e2){return{success:false,error:'Network error. Check your internet connection and try again.'};}
+  }
+}
 
 // ══ LOGIN ══
 async function doLogin(){
@@ -492,7 +530,7 @@ function startApp(){
   const h=new Date().getHours();
   document.getElementById('dashGreeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+(session.staffName||session.staffId);
   document.getElementById('dashDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  loadData();
+  loadIncentiveConfig().then(()=>loadData());
 }
 
 // ══ DATA LOADING ══
