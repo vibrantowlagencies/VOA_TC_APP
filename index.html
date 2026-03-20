@@ -254,6 +254,25 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .toast.error{background:var(--red)}
 .section-header{padding:12px 16px 4px;font-family:var(--fh);font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:space-between}
 .count-badge{background:var(--accent-lt);color:var(--accent);font-size:11px;font-family:var(--fm);padding:2px 8px;border-radius:20px;font-weight:700}
+
+/* ── REPORT TAB ─────────────────────────────────── */
+.rpt-hero{background:linear-gradient(135deg,#1a3c5e,#2c5282);border-radius:20px;padding:20px;color:#fff;margin-bottom:16px}
+.rpt-hero-title{font-family:var(--fh);font-size:18px;font-weight:800;margin-bottom:4px}
+.rpt-hero-sub{font-size:12px;opacity:.7;font-family:var(--fm)}
+.rpt-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:14px}
+.rpt-stat{background:rgba(255,255,255,.12);border-radius:12px;padding:10px;text-align:center}
+.rpt-stat-val{font-family:var(--fh);font-size:22px;font-weight:800}
+.rpt-stat-lbl{font-size:10px;opacity:.7;font-family:var(--fm);margin-top:2px}
+.rpt-section{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.rpt-section-title{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.rpt-outcome-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px}
+.rpt-outcome-row:last-child{border-bottom:none}
+.rpt-outcome-badge{font-family:var(--fm);font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;background:var(--bg3);color:var(--text2)}
+.rpt-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:12px;border:none;font-family:var(--fh);font-size:15px;font-weight:700;cursor:pointer;margin-bottom:10px;transition:all .2s}
+.rpt-btn-dl{background:linear-gradient(135deg,#1a3c5e,#2c5282);color:#fff}
+.rpt-btn-wa{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff}
+.rpt-btn:active{transform:scale(.97)}
+.rpt-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px;font-family:var(--fm)}
 </style>
 </head>
 <body>
@@ -429,6 +448,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     <button class="ni on" id="navDash" onclick="switchPage('Dash')"><span class="ico">🏠</span>Home</button>
     <button class="ni" id="navAccounts" onclick="switchPage('Accounts')"><span class="ico">📋</span>Accounts</button>
     <button class="ni" id="navEarnings" onclick="switchPage('Earnings')"><span class="ico">💰</span>Earnings</button>
+    <button class="ni" id="navReport" onclick="switchPage('Report')"><span class="ico">📊</span>Report</button>
   </div>
 </div>
 
@@ -824,6 +844,7 @@ function switchPage(name){
   document.getElementById('page'+name).classList.add('on');
   document.getElementById('nav'+name).classList.add('on');
   if(name==='Earnings')loadEarnings();
+  if(name==='Report')loadReport();
 }
 
 // ══ ACTIONS ══
@@ -836,111 +857,123 @@ function openWA(m,name,accNo){
   window.open('https://wa.me/'+num+'?text='+msg,'_blank');
 }
 
-// ── STATUS → VOC MAPPING (ACT feedback format) ────────────────
+// ── STATUS → VOC MAPPING ─────────────────────────────────────
 const VOC_MAP = {
-  'Appt Fixed':       {sub:'APPOINTMENT FIXED',    voc:'CALLBACK'},
-  'Future Appointment':{sub:'APPOINTMENT FIXED',   voc:'CALLBACK'},
-  'Rescheduled':      {sub:'RESCHEDULED',           voc:'CALLBACK'},
-  'Called':           {sub:'CALLED',                voc:'CALLBACK'},
-  'Not Reachable':    {sub:'RNR',                   voc:'NO ANSWER'},
-  'Fresh':            {sub:'NOT CALLED',            voc:'PENDING'},
-  'Issue':            {sub:'ISSUE',                 voc:'ESCALATION'},
-  'Issue - Refund':   {sub:'REFUND ISSUE',          voc:'ESCALATION'},
-  'Issue - Junction Box':{sub:'JUNCTION BOX',       voc:'ESCALATION'},
-  'Issue - Mail Confirm':{sub:'MAIL CONFIRMATION',  voc:'ESCALATION'},
-  'Issue - Reconnection':{sub:'RECONNECTION',       voc:'ESCALATION'},
-  'Issue - Address Change':{sub:'ADDRESS CHANGE',   voc:'ESCALATION'},
-  'Strike 1':         {sub:'NOT ANSWERING',         voc:'STRIKE'},
-  'Strike 2':         {sub:'NOT ANSWERING',         voc:'STRIKE'},
-  'Strike 3':         {sub:'NOT ANSWERING - FINAL', voc:'BLACKLIST'},
-  'Non Recoverable - Wrong Number':{sub:'WRONG NUMBER',    voc:'NON RECOVERABLE'},
-  'Non Recoverable - Address Not Found':{sub:'NOT FOUND',  voc:'NON RECOVERABLE'},
-  'Non Recoverable - Own':{sub:'OWN/LOST',          voc:'NON RECOVERABLE'},
-  'Non Recoverable - Lost':{sub:'OWN/LOST',         voc:'NON RECOVERABLE'},
-  'Collected':        {sub:'COLLECTED',             voc:'CLOSED'},
+  'Appt Fixed':                      {sub:'APPOINTMENT FIXED',   voc:'CALLBACK'},
+  'Future Appointment':              {sub:'APPOINTMENT FIXED',   voc:'CALLBACK'},
+  'Rescheduled':                     {sub:'RESCHEDULED',          voc:'CALLBACK'},
+  'Called':                          {sub:'CALLED',               voc:'CALLBACK'},
+  'Not Reachable':                   {sub:'RNR',                  voc:'NO ANSWER'},
+  'Fresh':                           {sub:'NOT CALLED',           voc:'PENDING'},
+  'Issue':                           {sub:'ISSUE',                voc:'ESCALATION'},
+  'Issue - Refund':                  {sub:'REFUND ISSUE',         voc:'ESCALATION'},
+  'Issue - Junction Box':            {sub:'JUNCTION BOX',         voc:'ESCALATION'},
+  'Issue - Mail Confirm':            {sub:'MAIL CONFIRMATION',    voc:'ESCALATION'},
+  'Issue - Reconnection':            {sub:'RECONNECTION',         voc:'ESCALATION'},
+  'Issue - Address Change':          {sub:'ADDRESS CHANGE',       voc:'ESCALATION'},
+  'Strike 1':                        {sub:'NOT ANSWERING',        voc:'STRIKE'},
+  'Strike 2':                        {sub:'NOT ANSWERING',        voc:'STRIKE'},
+  'Strike 3':                        {sub:'NOT ANSWERING - FINAL',voc:'BLACKLIST'},
+  'Non Recoverable - Wrong Number':  {sub:'WRONG NUMBER',         voc:'NON RECOVERABLE'},
+  'Non Recoverable - Address Not Found':{sub:'NOT FOUND',         voc:'NON RECOVERABLE'},
+  'Non Recoverable - Own':           {sub:'OWN/LOST',             voc:'NON RECOVERABLE'},
+  'Non Recoverable - Lost':          {sub:'OWN/LOST',             voc:'NON RECOVERABLE'},
+  'Collected':                       {sub:'COLLECTED',            voc:'CLOSED'},
 };
 
+function getRptStats(){
+  const total  = allAccounts.length;
+  const called = allAccounts.filter(a=>a.status!=='Fresh').length;
+  const fixed  = allAccounts.filter(a=>a.status==='Appt Fixed'||a.status==='Future Appointment').length;
+  const fresh  = allAccounts.filter(a=>a.status==='Fresh').length;
+  const conv   = called>0?Math.round(fixed/called*100):0;
+  const breakdown = {};
+  allAccounts.forEach(a=>{const k=a.status||'Unknown';breakdown[k]=(breakdown[k]||0)+1;});
+  return {total,called,fixed,fresh,conv,breakdown};
+}
+
+function loadReport(){
+  const s = getRptStats();
+  const today = new Date().toLocaleDateString('en-GB',{weekday:'long',day:'2-digit',month:'short',year:'numeric'});
+  document.getElementById('rptDate').textContent = today;
+  document.getElementById('rptTotal').textContent = s.total;
+  document.getElementById('rptCalled').textContent = s.called;
+  document.getElementById('rptFixed').textContent = s.fixed;
+
+  const bd = document.getElementById('rptBreakdown');
+  const entries = Object.entries(s.breakdown).sort((a,b)=>b[1]-a[1]);
+  if(!entries.length){
+    bd.innerHTML='<div class="rpt-empty">No accounts loaded yet</div>';
+    return;
+  }
+  bd.innerHTML = entries.map(([status,count])=>{
+    const pct = s.total>0?Math.round(count/s.total*100):0;
+    return `<div class="rpt-outcome-row">
+      <span>${status}</span>
+      <span><b>${count}</b> <span class="rpt-outcome-badge">${pct}%</span></span>
+    </div>`;
+  }).join('');
+}
+
 function dlExcel(){
-  if(!allAccounts.length){toast('No accounts to export!','error');return;}
+  if(!allAccounts.length){toast('No accounts to export','error');return;}
+  if(typeof XLSX==='undefined'){toast('Loading library, try again in 2s','error');return;}
   try {
-    const wb   = XLSX.utils.book_new();
-    const today= new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    const wb     = XLSX.utils.book_new();
+    const s      = getRptStats();
     const tcName = session.displayName || session.staffId;
+    const today  = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
 
-    // ── Sheet 1: Calling Feedback (ACT format) ──────────────
-    const headers = ['Account No.','Name','Mobile No.','Address','SR Number','Area','TC Name','Sub VOC','VOC','Appt Date','Remark'];
-    const rows = allAccounts.map(a => {
-      const v = VOC_MAP[a.status] || {sub: a.status || '', voc: 'PENDING'};
-      return [
-        a.accountNo   || '',
-        a.name        || '',
-        a.mobile      || '',
-        a.address     || '',
-        a.srNumber    || '',
-        a.area        || '',
-        tcName,
-        v.sub,
-        v.voc,
-        a.apptDate    || '',
-        a.tcRemark    || '',
-      ];
+    // Sheet 1 — Calling Feedback (ACT format)
+    const hdrs = ['Account No.','Name','Mobile No.','Address','SR Number','Area','TC Name','Sub VOC','VOC','Appt Date','Remark'];
+    const rows = allAccounts.map(a=>{
+      const v = VOC_MAP[a.status]||{sub:a.status||'',voc:'PENDING'};
+      return [a.accountNo||'',a.name||'',a.mobile||'',a.address||'',
+              a.srNumber||'',a.area||'',tcName,v.sub,v.voc,a.apptDate||'',a.tcRemark||''];
     });
-
-    const ws1 = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-    ws1['!cols'] = [
-      {wch:16},{wch:22},{wch:14},{wch:40},
-      {wch:14},{wch:16},{wch:14},{wch:24},{wch:18},{wch:12},{wch:28}
-    ];
-    // Freeze header row
-    ws1['!freeze'] = {xSplit:0, ySplit:1};
+    const ws1 = XLSX.utils.aoa_to_sheet([hdrs,...rows]);
+    ws1['!cols']=[{wch:16},{wch:22},{wch:14},{wch:38},{wch:14},{wch:16},{wch:14},{wch:24},{wch:18},{wch:12},{wch:28}];
     XLSX.utils.book_append_sheet(wb, ws1, today);
 
-    // ── Sheet 2: Summary ────────────────────────────────────
-    const total   = allAccounts.length;
-    const called  = allAccounts.filter(a=>a.status!=='Fresh').length;
-    const fixed   = allAccounts.filter(a=>a.status==='Appt Fixed'||a.status==='Future Appointment').length;
-    const pending = allAccounts.filter(a=>a.status==='Fresh').length;
-    const convPct = called>0?Math.round(fixed/called*100):0;
-
-    // Outcome breakdown
-    const breakdown = {};
-    allAccounts.forEach(a=>{
-      const k = a.status||'Unknown';
-      breakdown[k] = (breakdown[k]||0) + 1;
-    });
-
-    const summaryRows = [
+    // Sheet 2 — Summary
+    const sumRows=[
       ['VOA CALLING REPORT SUMMARY',''],
-      ['Telecaller', tcName],
-      ['Staff ID',   session.staffId],
-      ['City',       session.city||'CBE'],
-      ['Date',       today],
-      ['',''],
+      ['Telecaller',tcName],['Staff ID',session.staffId],
+      ['City',session.city||'CBE'],['Date',today],['',''],
       ['METRIC','COUNT'],
-      ['Total Assigned',    total],
-      ['Total Called',      called],
-      ['Appointments Fixed',fixed],
-      ['Pending (Fresh)',   pending],
-      ['Conversion %',      convPct+'%'],
-      ['',''],
+      ['Total Assigned',s.total],['Total Called',s.called],
+      ['Appointments Fixed',s.fixed],['Pending (Fresh)',s.fresh],
+      ['Conversion %',s.conv+'%'],['',''],
       ['OUTCOME BREAKDOWN','COUNT'],
-      ...Object.entries(breakdown).sort((a,b)=>b[1]-a[1]).map(([k,v])=>[k,v]),
+      ...Object.entries(s.breakdown).sort((a,b)=>b[1]-a[1]),
       ['',''],
-      ['Est. Incentive (₹300 × Fixed)', '₹'+(fixed*300).toLocaleString('en-IN')],
+      ['Est. Incentive (₹300 × Fixed)','₹'+(s.fixed*300).toLocaleString('en-IN')],
     ];
-
-    const ws2 = XLSX.utils.aoa_to_sheet(summaryRows);
-    ws2['!cols'] = [{wch:32},{wch:16}];
+    const ws2 = XLSX.utils.aoa_to_sheet(sumRows);
+    ws2['!cols']=[{wch:32},{wch:16}];
     XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
 
-    // Download
-    const fname = tcName+'_Report_'+today.replace(/ /g,'_')+'.xlsx';
-    XLSX.writeFile(wb, fname);
+    XLSX.writeFile(wb, tcName+'_Report_'+today.replace(/ /g,'_')+'.xlsx');
     toast('✅ Report downloaded!','success');
+  } catch(err){ toast('❌ '+err.message,'error'); }
+}
 
-  } catch(err){
-    toast('❌ Error: '+err.message,'error');
-  }
+function waReport(){
+  if(!allAccounts.length){toast('No accounts loaded','error');return;}
+  const s = getRptStats();
+  const tcName = session.displayName||session.staffId;
+  const today = new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+  const msg = encodeURIComponent(
+    '📊 *VOA Daily Report — '+today+'*\n'+
+    '👤 Telecaller: '+tcName+'\n\n'+
+    '📋 Total Assigned: '+s.total+'\n'+
+    '📞 Total Called: '+s.called+'\n'+
+    '✅ Appt Fixed: '+s.fixed+'\n'+
+    '🔄 Pending: '+s.fresh+'\n'+
+    '📈 Conversion: '+s.conv+'%\n'+
+    '💰 Est. Incentive: ₹'+(s.fixed*300).toLocaleString('en-IN')
+  );
+  window.open('https://wa.me/?text='+msg,'_blank');
 }
 
 // ══ SHEET ══
