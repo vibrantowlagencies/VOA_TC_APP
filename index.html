@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VOA Telecaller Console</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
@@ -835,9 +836,111 @@ function openWA(m,name,accNo){
   window.open('https://wa.me/'+num+'?text='+msg,'_blank');
 }
 
+// ── STATUS → VOC MAPPING (ACT feedback format) ────────────────
+const VOC_MAP = {
+  'Appt Fixed':       {sub:'APPOINTMENT FIXED',    voc:'CALLBACK'},
+  'Future Appointment':{sub:'APPOINTMENT FIXED',   voc:'CALLBACK'},
+  'Rescheduled':      {sub:'RESCHEDULED',           voc:'CALLBACK'},
+  'Called':           {sub:'CALLED',                voc:'CALLBACK'},
+  'Not Reachable':    {sub:'RNR',                   voc:'NO ANSWER'},
+  'Fresh':            {sub:'NOT CALLED',            voc:'PENDING'},
+  'Issue':            {sub:'ISSUE',                 voc:'ESCALATION'},
+  'Issue - Refund':   {sub:'REFUND ISSUE',          voc:'ESCALATION'},
+  'Issue - Junction Box':{sub:'JUNCTION BOX',       voc:'ESCALATION'},
+  'Issue - Mail Confirm':{sub:'MAIL CONFIRMATION',  voc:'ESCALATION'},
+  'Issue - Reconnection':{sub:'RECONNECTION',       voc:'ESCALATION'},
+  'Issue - Address Change':{sub:'ADDRESS CHANGE',   voc:'ESCALATION'},
+  'Strike 1':         {sub:'NOT ANSWERING',         voc:'STRIKE'},
+  'Strike 2':         {sub:'NOT ANSWERING',         voc:'STRIKE'},
+  'Strike 3':         {sub:'NOT ANSWERING - FINAL', voc:'BLACKLIST'},
+  'Non Recoverable - Wrong Number':{sub:'WRONG NUMBER',    voc:'NON RECOVERABLE'},
+  'Non Recoverable - Address Not Found':{sub:'NOT FOUND',  voc:'NON RECOVERABLE'},
+  'Non Recoverable - Own':{sub:'OWN/LOST',          voc:'NON RECOVERABLE'},
+  'Non Recoverable - Lost':{sub:'OWN/LOST',         voc:'NON RECOVERABLE'},
+  'Collected':        {sub:'COLLECTED',             voc:'CLOSED'},
+};
+
 function dlExcel(){
-  if(!allAccounts.length){toast('No accounts to download','error');return;}
-  toast('Excel download requires SheetJS library — available in full version','error');
+  if(!allAccounts.length){toast('No accounts to export!','error');return;}
+  try {
+    const wb   = XLSX.utils.book_new();
+    const today= new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+    const tcName = session.displayName || session.staffId;
+
+    // ── Sheet 1: Calling Feedback (ACT format) ──────────────
+    const headers = ['Account No.','Name','Mobile No.','Address','SR Number','Area','TC Name','Sub VOC','VOC','Appt Date','Remark'];
+    const rows = allAccounts.map(a => {
+      const v = VOC_MAP[a.status] || {sub: a.status || '', voc: 'PENDING'};
+      return [
+        a.accountNo   || '',
+        a.name        || '',
+        a.mobile      || '',
+        a.address     || '',
+        a.srNumber    || '',
+        a.area        || '',
+        tcName,
+        v.sub,
+        v.voc,
+        a.apptDate    || '',
+        a.tcRemark    || '',
+      ];
+    });
+
+    const ws1 = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+    ws1['!cols'] = [
+      {wch:16},{wch:22},{wch:14},{wch:40},
+      {wch:14},{wch:16},{wch:14},{wch:24},{wch:18},{wch:12},{wch:28}
+    ];
+    // Freeze header row
+    ws1['!freeze'] = {xSplit:0, ySplit:1};
+    XLSX.utils.book_append_sheet(wb, ws1, today);
+
+    // ── Sheet 2: Summary ────────────────────────────────────
+    const total   = allAccounts.length;
+    const called  = allAccounts.filter(a=>a.status!=='Fresh').length;
+    const fixed   = allAccounts.filter(a=>a.status==='Appt Fixed'||a.status==='Future Appointment').length;
+    const pending = allAccounts.filter(a=>a.status==='Fresh').length;
+    const convPct = called>0?Math.round(fixed/called*100):0;
+
+    // Outcome breakdown
+    const breakdown = {};
+    allAccounts.forEach(a=>{
+      const k = a.status||'Unknown';
+      breakdown[k] = (breakdown[k]||0) + 1;
+    });
+
+    const summaryRows = [
+      ['VOA CALLING REPORT SUMMARY',''],
+      ['Telecaller', tcName],
+      ['Staff ID',   session.staffId],
+      ['City',       session.city||'CBE'],
+      ['Date',       today],
+      ['',''],
+      ['METRIC','COUNT'],
+      ['Total Assigned',    total],
+      ['Total Called',      called],
+      ['Appointments Fixed',fixed],
+      ['Pending (Fresh)',   pending],
+      ['Conversion %',      convPct+'%'],
+      ['',''],
+      ['OUTCOME BREAKDOWN','COUNT'],
+      ...Object.entries(breakdown).sort((a,b)=>b[1]-a[1]).map(([k,v])=>[k,v]),
+      ['',''],
+      ['Est. Incentive (₹300 × Fixed)', '₹'+(fixed*300).toLocaleString('en-IN')],
+    ];
+
+    const ws2 = XLSX.utils.aoa_to_sheet(summaryRows);
+    ws2['!cols'] = [{wch:32},{wch:16}];
+    XLSX.utils.book_append_sheet(wb, ws2, 'Summary');
+
+    // Download
+    const fname = tcName+'_Report_'+today.replace(/ /g,'_')+'.xlsx';
+    XLSX.writeFile(wb, fname);
+    toast('✅ Report downloaded!','success');
+
+  } catch(err){
+    toast('❌ Error: '+err.message,'error');
+  }
 }
 
 // ══ SHEET ══
