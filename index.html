@@ -4,347 +4,260 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VOA Telecaller Console</title>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:        #f8f9fb;
-  --bg2:       #ffffff;
-  --bg3:       #f1f4f8;
-  --card:      #ffffff;
-  --border:    #e4e8ef;
-  --border2:   #d0d7e3;
-  --accent:    #f97316;
-  --accent-lt: #fff4ed;
-  --accent-dk: #ea6c0a;
-  --blue:      #3b82f6;
-  --blue-lt:   #eff6ff;
-  --green:     #16a34a;
-  --green-lt:  #f0fdf4;
-  --red:       #dc2626;
-  --red-lt:    #fef2f2;
-  --amber:     #d97706;
-  --amber-lt:  #fffbeb;
-  --purple:    #7c3aed;
-  --purple-lt: #f5f3ff;
-  --text:      #0f172a;
-  --text2:     #475569;
-  --text3:     #94a3b8;
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --shadow:    0 4px 16px rgba(0,0,0,.08);
-  --shadow-lg: 0 8px 32px rgba(0,0,0,.12);
-  --radius:    14px;
-  --font-head: 'Sora', sans-serif;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-body: 'Plus Jakarta Sans', sans-serif;
+:root{
+  --bg:#f8f9fb;--bg2:#ffffff;--bg3:#f1f4f8;
+  --accent:#f97316;--accent-lt:#fff4ed;--accent-dk:#ea6c0a;
+  --blue:#3b82f6;--blue-lt:#eff6ff;
+  --green:#16a34a;--green-lt:#f0fdf4;
+  --red:#dc2626;--red-lt:#fef2f2;
+  --amber:#d97706;--amber-lt:#fffbeb;
+  --purple:#7c3aed;--purple-lt:#f5f3ff;
+  --cyan:#0891b2;--cyan-lt:#ecfeff;
+  --border:#e4e8ef;--border2:#d0d7e3;
+  --text:#0f172a;--text2:#475569;--text3:#94a3b8;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06);
+  --shadow:0 4px 16px rgba(0,0,0,.08);
+  --shadow-lg:0 8px 32px rgba(0,0,0,.12);
+  --r:14px;
+  --fh:'Sora',sans-serif;--fm:'JetBrains Mono',monospace;--fb:'Plus Jakarta Sans',sans-serif;
 }
-* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-body { background:var(--bg); color:var(--text); font-family:var(--font-body); min-height:100vh; overflow-x:hidden; }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;overflow-x:hidden}
 
-/* HEADER */
-.header {
-  background:var(--bg2); border-bottom:1px solid var(--border);
-  padding:0 16px; height:58px;
-  display:flex; align-items:center; justify-content:space-between;
-  position:sticky; top:0; z-index:100; box-shadow:var(--shadow-sm);
-}
-.header-brand { display:flex; align-items:center; gap:10px; }
-.brand-logo {
-  width:36px; height:36px; background:var(--accent); border-radius:10px;
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-head); font-weight:800; font-size:13px; color:#fff;
-  box-shadow:0 2px 8px rgba(249,115,22,.3);
-}
-.brand-name { font-family:var(--font-head); font-size:17px; font-weight:700; color:var(--text); }
-.brand-role {
-  font-family:var(--font-mono); font-size:10px; color:var(--accent);
-  background:var(--accent-lt); padding:3px 9px; border-radius:20px;
-  border:1px solid rgba(249,115,22,.2); letter-spacing:.5px;
-}
-.header-right { display:flex; align-items:center; gap:8px; }
-.staff-badge {
-  font-family:var(--font-mono); font-size:11px; color:var(--text2);
-  background:var(--bg3); padding:5px 10px; border-radius:8px; border:1px solid var(--border);
-}
-.logout-btn {
-  background:none; border:1px solid var(--border); border-radius:8px;
-  color:var(--text3); cursor:pointer; padding:5px 10px;
-  font-size:12px; font-family:var(--font-body); transition:all .2s;
-}
-.logout-btn:hover { color:var(--red); border-color:var(--red); background:var(--red-lt); }
+/* ── LOGIN ── */
+.login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(145deg,#fff4ed,#f8f9fb,#fff);padding:24px}
+.login-card{background:#fff;border:1px solid var(--border);border-radius:24px;padding:44px 36px;width:100%;max-width:390px;box-shadow:var(--shadow-lg);animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.login-logo-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;margin-bottom:36px}
+.login-logo{width:72px;height:72px;background:linear-gradient(135deg,var(--accent),var(--accent-dk));border-radius:20px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:26px;color:#fff;box-shadow:0 8px 28px rgba(249,115,22,.28)}
+.login-title{font-family:var(--fh);font-size:24px;font-weight:700}
+.login-sub{font-size:13px;color:var(--text3);text-align:center}
+.form-group{margin-bottom:18px}
+.form-label{font-size:11px;font-family:var(--fm);letter-spacing:1px;color:var(--text3);margin-bottom:8px;display:block;text-transform:uppercase}
+.form-input,.form-select{width:100%;background:var(--bg3);border:1.5px solid var(--border);border-radius:12px;padding:13px 15px;color:var(--text);font-family:var(--fb);font-size:15px;outline:none;transition:all .2s;-webkit-appearance:none}
+.form-input:focus,.form-select:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(249,115,22,.1)}
+.btn-login{width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dk));border:none;border-radius:14px;color:#fff;font-family:var(--fh);font-size:17px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(249,115,22,.3);transition:all .2s;margin-top:8px}
+.btn-login:active{transform:scale(.98)}
+.login-error{background:var(--red-lt);border:1px solid rgba(220,38,38,.2);border-radius:10px;padding:11px 14px;font-size:13px;color:var(--red);margin-top:12px;display:none}
 
-/* LOGIN */
-.login-screen {
-  min-height:100vh; display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(145deg, #fff4ed 0%, #f8f9fb 50%, #fff 100%);
-  padding:24px;
-}
-.login-card {
-  background:var(--card); border:1px solid var(--border);
-  border-radius:24px; padding:44px 36px;
-  width:100%; max-width:390px;
-  box-shadow:var(--shadow-lg); animation:fadeUp .4s ease;
-}
-@keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
-.login-logo-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:36px; }
-.login-logo {
-  width:72px; height:72px;
-  background:linear-gradient(135deg, var(--accent), var(--accent-dk));
-  border-radius:20px;
-  display:flex; align-items:center; justify-content:center;
-  font-family:var(--font-head); font-weight:800; font-size:26px; color:#fff;
-  box-shadow:0 8px 28px rgba(249,115,22,.28);
-}
-.login-title { font-family:var(--font-head); font-size:24px; font-weight:700; color:var(--text); }
-.login-sub { font-size:13px; color:var(--text3); text-align:center; }
-.form-group { margin-bottom:18px; }
-.form-label { font-size:11px; font-family:var(--font-mono); letter-spacing:1px; color:var(--text3); margin-bottom:8px; display:block; text-transform:uppercase; }
-.form-input, .form-select {
-  width:100%; background:var(--bg3); border:1.5px solid var(--border);
-  border-radius:12px; padding:13px 15px; color:var(--text);
-  font-family:var(--font-body); font-size:15px; outline:none;
-  transition:all .2s; -webkit-appearance:none;
-}
-.form-input:focus, .form-select:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(249,115,22,.1); }
-.btn-login {
-  width:100%; padding:15px;
-  background:linear-gradient(135deg, var(--accent), var(--accent-dk));
-  border:none; border-radius:14px; color:#fff;
-  font-family:var(--font-head); font-size:17px; font-weight:700;
-  cursor:pointer; box-shadow:0 4px 20px rgba(249,115,22,.3);
-  transition:all .2s; margin-top:8px;
-}
-.btn-login:hover { transform:translateY(-1px); box-shadow:0 8px 28px rgba(249,115,22,.4); }
-.btn-login:active { transform:scale(.98); }
-.login-error {
-  background:var(--red-lt); border:1px solid rgba(220,38,38,.2);
-  border-radius:10px; padding:11px 14px;
-  font-size:13px; color:var(--red); margin-top:12px; display:none;
-}
+/* ── APP SHELL ── */
+.app{display:none;flex-direction:column;height:100vh}
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 16px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;box-shadow:var(--shadow-sm);flex-shrink:0}
+.brand{display:flex;align-items:center;gap:10px}
+.brand-logo{width:34px;height:34px;background:var(--accent);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:var(--fh);font-weight:800;font-size:12px;color:#fff}
+.brand-name{font-family:var(--fh);font-size:16px;font-weight:700}
+.brand-role{font-family:var(--fm);font-size:10px;color:var(--accent);background:var(--accent-lt);padding:3px 9px;border-radius:20px;border:1px solid rgba(249,115,22,.2)}
+.hdr-right{display:flex;align-items:center;gap:8px}
+.staff-badge{font-family:var(--fm);font-size:11px;color:var(--text2);background:var(--bg3);padding:5px 10px;border-radius:8px;border:1px solid var(--border)}
+.logout-btn{background:none;border:1px solid var(--border);border-radius:8px;color:var(--text3);cursor:pointer;padding:5px 10px;font-size:12px;font-family:var(--fb)}
 
-/* DASHBOARD */
-.dash-wrap { padding:16px; }
-.dash-greeting { font-family:var(--font-head); font-size:20px; font-weight:700; color:var(--text); margin-bottom:2px; }
-.dash-date { font-size:12px; color:var(--text3); font-family:var(--font-mono); margin-bottom:16px; }
-.dash-cards { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:4px; }
-.dash-card {
-  background:var(--card); border:1px solid var(--border);
-  border-radius:var(--radius); padding:16px;
-  box-shadow:var(--shadow-sm); position:relative; overflow:hidden;
-}
-.dash-card-icon { font-size:20px; margin-bottom:8px; }
-.dash-card-val { font-family:var(--font-head); font-size:30px; font-weight:800; line-height:1; }
-.dash-card.orange .dash-card-val { color:var(--accent); }
-.dash-card.green  .dash-card-val { color:var(--green); }
-.dash-card.blue   .dash-card-val { color:var(--blue); }
-.dash-card.red    .dash-card-val { color:var(--red); }
-.dash-card-lbl { font-size:11px; color:var(--text3); margin-top:4px; font-weight:500; }
+/* ── BOTTOM NAV ── */
+.bnav{display:flex;background:var(--bg2);border-top:1px solid var(--border);height:60px;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom)}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;border:none;background:none;cursor:pointer;color:var(--text3);font-size:10px;font-family:var(--fb);font-weight:600;transition:color .2s;padding:0}
+.ni .ico{font-size:20px}
+.ni.on{color:var(--accent)}
+.page{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none}
+.page.on{display:block}
 
-/* FILTER CHIPS */
-.filter-row { display:flex; gap:8px; overflow-x:auto; padding:12px 16px; scrollbar-width:none; }
-.filter-row::-webkit-scrollbar { display:none; }
-.chip {
-  flex-shrink:0; padding:7px 14px; border-radius:20px;
-  font-size:12px; font-family:var(--font-mono); letter-spacing:.3px;
-  border:1.5px solid var(--border); background:var(--card);
-  color:var(--text2); cursor:pointer; transition:all .2s;
-  white-space:nowrap; box-shadow:var(--shadow-sm);
-}
-.chip.active { background:var(--accent-lt); border-color:rgba(249,115,22,.35); color:var(--accent); font-weight:600; }
+/* ── DASHBOARD ── */
+.dash-wrap{padding:16px}
+.dash-greeting{font-family:var(--fh);font-size:20px;font-weight:700;margin-bottom:2px}
+.dash-date{font-size:12px;color:var(--text3);font-family:var(--fm);margin-bottom:16px}
+.dash-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px}
+.dash-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:16px;box-shadow:var(--shadow-sm)}
+.dash-card-icon{font-size:20px;margin-bottom:8px}
+.dash-card-val{font-family:var(--fh);font-size:30px;font-weight:800;line-height:1}
+.dash-card.orange .dash-card-val{color:var(--accent)}
+.dash-card.green  .dash-card-val{color:var(--green)}
+.dash-card.blue   .dash-card-val{color:var(--blue)}
+.dash-card.red    .dash-card-val{color:var(--red)}
+.dash-card-lbl{font-size:11px;color:var(--text3);margin-top:4px;font-weight:500}
 
-/* SEARCH */
-.search-wrap { padding:0 16px 12px; }
-.search-box {
-  display:flex; align-items:center; gap:10px;
-  background:var(--card); border:1.5px solid var(--border);
-  border-radius:12px; padding:11px 14px;
-  box-shadow:var(--shadow-sm); transition:all .2s;
-}
-.search-box:focus-within { border-color:var(--accent); box-shadow:0 0 0 3px rgba(249,115,22,.1); }
-.search-input { flex:1; background:none; border:none; outline:none; color:var(--text); font-family:var(--font-body); font-size:14px; }
-.search-input::placeholder { color:var(--text3); }
+/* Intelligence Panel */
+.intel-panel{background:linear-gradient(135deg,#fff4ed,#fff8f3);border:1px solid rgba(249,115,22,.2);border-radius:var(--r);padding:14px 16px;margin:0 16px 12px}
+.intel-title{font-family:var(--fh);font-size:13px;font-weight:700;color:var(--accent);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.intel-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.intel-item{background:#fff;border:1px solid rgba(249,115,22,.15);border-radius:10px;padding:10px 12px}
+.intel-item-label{font-size:10px;color:var(--text3);font-family:var(--fm);margin-bottom:4px;text-transform:uppercase;letter-spacing:.5px}
+.intel-item-val{font-family:var(--fh);font-size:16px;font-weight:800;color:var(--text)}
+.intel-item-sub{font-size:10px;color:var(--text2);margin-top:2px}
+.intel-item.green-bg{background:var(--green-lt);border-color:#86efac}
+.intel-item.green-bg .intel-item-val{color:var(--green)}
+.intel-item.red-bg{background:var(--red-lt);border-color:#fecaca}
+.intel-item.red-bg .intel-item-val{color:var(--red)}
+.intel-item.amber-bg{background:var(--amber-lt);border-color:#fde68a}
+.intel-item.amber-bg .intel-item-val{color:var(--amber)}
+.intel-nudge{background:linear-gradient(135deg,var(--green),#15803d);border-radius:10px;padding:12px 14px;margin-top:10px;color:#fff;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
 
-/* ACCOUNT LIST */
-.list-section { padding:0 16px; }
-.list-count { font-size:11px; color:var(--text3); font-family:var(--font-mono); margin-bottom:10px; }
-.account-card {
-  background:var(--card); border:1.5px solid var(--border);
-  border-radius:var(--radius); padding:16px; margin-bottom:10px;
-  cursor:pointer; transition:all .2s; box-shadow:var(--shadow-sm);
-  animation:slideIn .3s ease;
-}
-@keyframes slideIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
-.account-card:hover  { border-color:rgba(249,115,22,.4); box-shadow:var(--shadow); }
-.account-card:active { transform:scale(.99); }
-.card-top { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px; }
-.card-accno { font-family:var(--font-head); font-size:16px; font-weight:700; color:var(--accent); }
-.card-name  { font-size:15px; font-weight:600; color:var(--text); margin-bottom:2px; }
-.card-phone { font-family:var(--font-mono); font-size:13px; color:var(--green); font-weight:500; }
-.card-addr  { font-size:12px; color:var(--text2); margin-top:6px; line-height:1.5; }
-.status-badge {
-  font-family:var(--font-mono); font-size:9px; letter-spacing:.5px;
-  padding:4px 9px; border-radius:20px; white-space:nowrap; font-weight:600;
-}
-.s-fresh    { background:#eff6ff; color:var(--blue); border:1px solid #bfdbfe; }
-.s-called   { background:var(--green-lt); color:var(--green); border:1px solid #86efac; }
-.s-appt     { background:var(--green-lt); color:var(--green); border:1px solid #86efac; }
-.s-rescheduled { background:var(--amber-lt); color:var(--amber); border:1px solid #fde68a; }
-.s-notvst   { background:var(--amber-lt); color:var(--amber); border:1px solid #fde68a; }
-.s-issue    { background:var(--red-lt); color:var(--red); border:1px solid #fecaca; }
-.s-collected{ background:var(--purple-lt); color:var(--purple); border:1px solid #ddd6fe; }
-.s-default  { background:var(--bg3); color:var(--text2); border:1px solid var(--border); }
-.card-footer {
-  display:flex; gap:8px; align-items:center;
-  margin-top:10px; padding-top:10px; border-top:1px solid var(--border);
-}
-.strike-dot { width:9px; height:9px; border-radius:50%; background:var(--red); flex-shrink:0; }
-.card-appt  { font-size:11px; color:var(--green); font-family:var(--font-mono); }
-.card-area  { font-size:11px; color:var(--text3); margin-left:auto; font-family:var(--font-mono); }
-.card-action-row { display:flex; gap:8px; margin-top:10px; }
-.btn-sm {
-  flex:1; padding:9px 10px; border-radius:10px;
-  font-size:12px; font-family:var(--font-head); font-weight:600;
-  border:1.5px solid; cursor:pointer; transition:all .2s;
-  display:flex; align-items:center; justify-content:center; gap:4px;
-}
-.btn-call { background:var(--green-lt); color:var(--green); border-color:#86efac; }
-.btn-wa   { background:var(--green-lt); color:#15803d; border-color:#86efac; }
-.btn-log  { background:var(--accent-lt); color:var(--accent); border-color:rgba(249,115,22,.3); }
-.btn-sm:active { transform:scale(.96); }
+/* ── ACCOUNTS PAGE ── */
+.filter-row{display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none}
+.filter-row::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;padding:7px 14px;border-radius:20px;font-size:12px;font-family:var(--fm);border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);cursor:pointer;transition:all .2s;white-space:nowrap;box-shadow:var(--shadow-sm)}
+.chip.active{background:var(--accent-lt);border-color:rgba(249,115,22,.35);color:var(--accent);font-weight:600}
+.search-wrap{padding:0 16px 12px}
+.search-box{display:flex;align-items:center;gap:10px;background:var(--bg2);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;box-shadow:var(--shadow-sm)}
+.search-box:focus-within{border-color:var(--accent)}
+.search-input{flex:1;background:none;border:none;outline:none;color:var(--text);font-family:var(--fb);font-size:14px}
+.search-input::placeholder{color:var(--text3)}
+.list-section{padding:0 16px 80px}
+.list-count{font-size:11px;color:var(--text3);font-family:var(--fm);margin-bottom:10px}
 
-/* BOTTOM SHEET */
-.sheet-overlay {
-  position:fixed; inset:0; background:rgba(15,23,42,.4);
-  z-index:200; opacity:0; pointer-events:none; transition:opacity .3s;
-  backdrop-filter:blur(4px);
-}
-.sheet-overlay.open { opacity:1; pointer-events:all; }
-.bottom-sheet {
-  position:fixed; bottom:0; left:0; right:0; z-index:201;
-  background:var(--card); border-radius:28px 28px 0 0;
-  border-top:1px solid var(--border); box-shadow:0 -8px 40px rgba(0,0,0,.1);
-  transform:translateY(100%); transition:transform .35s cubic-bezier(.4,0,.2,1);
-  max-height:92vh; display:flex; flex-direction:column;
-}
-.bottom-sheet.open { transform:translateY(0); }
-.sheet-handle { display:flex; justify-content:center; padding:14px 0 6px; }
-.sheet-handle-bar { width:40px; height:4px; background:var(--border2); border-radius:2px; }
-.sheet-header {
-  padding:0 20px 16px; display:flex; justify-content:space-between; align-items:center;
-  border-bottom:1px solid var(--border);
-}
-.sheet-title { font-family:var(--font-head); font-size:20px; font-weight:700; color:var(--text); }
-.sheet-close {
-  width:32px; height:32px; background:var(--bg3); border:1px solid var(--border);
-  border-radius:50%; display:flex; align-items:center; justify-content:center;
-  cursor:pointer; font-size:14px; color:var(--text2); transition:all .2s;
-}
-.sheet-close:hover { background:var(--red-lt); color:var(--red); border-color:rgba(220,38,38,.3); }
-.sheet-body { flex:1; overflow-y:auto; padding:20px 20px 36px; }
+/* ── ACCOUNT CARDS ── */
+.account-card{background:var(--bg2);border:1.5px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:10px;cursor:pointer;transition:all .2s;box-shadow:var(--shadow-sm);animation:slideIn .3s ease}
+@keyframes slideIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.account-card:hover{border-color:rgba(249,115,22,.4);box-shadow:var(--shadow)}
+.account-card:active{transform:scale(.99)}
+.card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.card-accno{font-family:var(--fh);font-size:15px;font-weight:700;color:var(--accent)}
+.card-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:2px}
+.card-phone{font-family:var(--fm);font-size:13px;color:var(--green);font-weight:500}
+.card-addr{font-size:12px;color:var(--text2);margin-top:6px;line-height:1.5}
+.card-remark{font-size:11px;color:var(--text3);margin-top:5px;font-style:italic;background:var(--bg3);border-radius:6px;padding:5px 8px}
+.card-exec{font-size:10px;color:var(--cyan);font-family:var(--fm);margin-top:4px}
+.card-footer{display:flex;gap:8px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.strike-dot{width:9px;height:9px;border-radius:50%;background:var(--red);flex-shrink:0}
+.card-appt{font-size:11px;color:var(--green);font-family:var(--fm)}
+.card-area{font-size:11px;color:var(--text3);margin-left:auto;font-family:var(--fm)}
+.score-badge{font-size:10px;font-family:var(--fm);padding:2px 8px;border-radius:20px;font-weight:700;flex-shrink:0}
+.score-hi{background:var(--green-lt);color:var(--green);border:1px solid #86efac}
+.score-md{background:var(--amber-lt);color:var(--amber);border:1px solid #fde68a}
+.score-lo{background:var(--bg3);color:var(--text3);border:1px solid var(--border)}
+.card-action-row{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+.btn-sm{flex:1;min-width:60px;padding:9px 6px;border-radius:10px;font-size:11px;font-family:var(--fh);font-weight:600;border:1.5px solid;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:3px;white-space:nowrap}
+.btn-call{background:var(--green-lt);color:var(--green);border-color:#86efac}
+.btn-wa{background:var(--green-lt);color:#15803d;border-color:#86efac}
+.btn-log{background:var(--accent-lt);color:var(--accent);border-color:rgba(249,115,22,.3)}
+.btn-nav{background:var(--blue-lt);color:var(--blue);border-color:#bfdbfe}
+.btn-sm:active{transform:scale(.96)}
 
-/* DETAIL */
-.detail-accno { font-family:var(--font-head); font-size:22px; font-weight:800; color:var(--accent); margin-bottom:2px; }
-.detail-name  { font-size:18px; font-weight:700; color:var(--text); margin-bottom:14px; }
-.detail-batch {
-  display:inline-block; font-family:var(--font-mono); font-size:11px;
-  background:var(--accent-lt); color:var(--accent);
-  padding:4px 12px; border-radius:20px; border:1px solid rgba(249,115,22,.2); margin-bottom:20px;
-}
-.detail-row { display:flex; gap:10px; align-items:flex-start; margin-bottom:12px; }
-.detail-icon { width:30px; flex-shrink:0; font-size:18px; }
-.detail-val { font-size:14px; color:var(--text); line-height:1.5; }
-.detail-val-sub { font-size:11px; color:var(--text3); margin-top:2px; }
-.detail-phone-big { font-family:var(--font-mono); font-size:22px; font-weight:600; color:var(--green); letter-spacing:1px; }
-.detail-section-title {
-  font-family:var(--font-mono); font-size:10px; color:var(--text3);
-  letter-spacing:1.5px; text-transform:uppercase;
-  margin:20px 0 12px; padding-top:20px; border-top:1px solid var(--border);
-}
-.strikes-row { display:flex; gap:6px; align-items:center; }
-.strike-indicator { width:14px; height:14px; border-radius:50%; border:2px solid var(--border2); background:var(--bg3); }
-.strike-indicator.filled { background:var(--red); border-color:var(--red); }
-.strike-text { font-size:12px; color:var(--text3); font-family:var(--font-mono); margin-left:4px; }
-.detail-action-row { display:flex; gap:10px; margin-top:20px; }
-.btn-detail {
-  flex:1; padding:14px; border-radius:14px;
-  font-family:var(--font-head); font-size:14px; font-weight:700;
-  border:none; cursor:pointer; transition:all .2s;
-  display:flex; align-items:center; justify-content:center; gap:6px;
-}
-.btn-call-big { background:var(--green); color:#fff; box-shadow:0 4px 16px rgba(22,163,74,.2); }
-.btn-wa-big   { background:#25D366; color:#fff; box-shadow:0 4px 16px rgba(37,211,102,.2); }
-.btn-log-big  { background:var(--accent); color:#fff; box-shadow:0 4px 16px rgba(249,115,22,.2); flex:2; }
-.btn-detail:active { transform:scale(.97); }
+/* ── STATUS BADGES ── */
+.status-badge{font-family:var(--fm);font-size:9px;letter-spacing:.5px;padding:4px 9px;border-radius:20px;white-space:nowrap;font-weight:600}
+.s-fresh{background:#eff6ff;color:var(--blue);border:1px solid #bfdbfe}
+.s-called{background:var(--green-lt);color:var(--green);border:1px solid #86efac}
+.s-appt{background:var(--green-lt);color:var(--green);border:1px solid #86efac}
+.s-rescheduled{background:var(--amber-lt);color:var(--amber);border:1px solid #fde68a}
+.s-notvst{background:var(--amber-lt);color:var(--amber);border:1px solid #fde68a}
+.s-issue{background:var(--red-lt);color:var(--red);border:1px solid #fecaca}
+.s-collected{background:var(--purple-lt);color:var(--purple);border:1px solid #ddd6fe}
+.s-strike{background:var(--red-lt);color:var(--red);border:1px solid #fca5a5}
+.s-default{background:var(--bg3);color:var(--text2);border:1px solid var(--border)}
 
-/* LOG FORM */
-.log-form-title { font-family:var(--font-head); font-size:17px; font-weight:700; color:var(--text); margin-bottom:16px; }
-.outcome-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-bottom:20px; }
-.outcome-btn {
-  padding:13px 8px; border-radius:12px;
-  border:1.5px solid var(--border); background:var(--bg3);
-  color:var(--text2); cursor:pointer; transition:all .2s;
-  text-align:center; font-size:13px; font-family:var(--font-body); font-weight:600;
-}
-.outcome-btn:hover { border-color:var(--border2); background:var(--card); }
-.outcome-btn.sel-Called         { background:var(--green-lt); border-color:#86efac; color:var(--green); }
-.outcome-btn.sel-Appt\ Fixed    { background:var(--blue-lt); border-color:#93c5fd; color:var(--blue); }
-.outcome-btn.sel-Rescheduled    { background:var(--amber-lt); border-color:#fde68a; color:var(--amber); }
-.outcome-btn.sel-Not\ Reachable { background:var(--bg3); border-color:var(--border2); color:var(--text2); }
-.outcome-btn.sel-Wrong\ Number  { background:var(--red-lt); border-color:#fecaca; color:var(--red); }
-.outcome-btn.sel-DND            { background:var(--red-lt); border-color:#fecaca; color:var(--red); }
-.appt-wrap { margin-bottom:16px; display:none; }
-.textarea-field {
-  width:100%; background:var(--bg3); border:1.5px solid var(--border);
-  border-radius:12px; padding:13px 15px; color:var(--text);
-  font-family:var(--font-body); font-size:14px; outline:none;
-  resize:none; min-height:80px; transition:all .2s;
-}
-.textarea-field:focus { border-color:var(--accent); background:#fff; box-shadow:0 0 0 3px rgba(249,115,22,.08); }
-.btn-submit-log {
-  width:100%; padding:15px; border-radius:14px;
-  background:linear-gradient(135deg, var(--accent), var(--accent-dk));
-  border:none; color:#fff;
-  font-family:var(--font-head); font-size:17px; font-weight:700;
-  cursor:pointer; box-shadow:0 4px 20px rgba(249,115,22,.25);
-  transition:all .2s; margin-top:16px;
-}
-.btn-submit-log:hover { transform:translateY(-1px); }
-.btn-submit-log:disabled { opacity:.45; cursor:not-allowed; transform:none; }
+/* ── BOTTOM SHEET ── */
+.overlay{position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:200;opacity:0;pointer-events:none;transition:opacity .3s;backdrop-filter:blur(4px)}
+.overlay.open{opacity:1;pointer-events:all}
+.bottom-sheet{position:fixed;bottom:0;left:0;right:0;z-index:201;background:#fff;border-radius:28px 28px 0 0;border-top:1px solid var(--border);box-shadow:0 -8px 40px rgba(0,0,0,.1);transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);max-height:92vh;display:flex;flex-direction:column}
+.bottom-sheet.open{transform:translateY(0)}
+.sheet-handle{display:flex;justify-content:center;padding:14px 0 6px}
+.sheet-handle-bar{width:40px;height:4px;background:var(--border2);border-radius:2px}
+.sheet-header{padding:0 20px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)}
+.sheet-title{font-family:var(--fh);font-size:18px;font-weight:700}
+.sheet-close{width:32px;height:32px;background:var(--bg3);border:1px solid var(--border);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:var(--text2)}
+.sheet-body{flex:1;overflow-y:auto;padding:20px 20px 36px}
 
-/* MISC */
-.empty-state { text-align:center; padding:60px 20px; }
-.empty-icon  { font-size:48px; margin-bottom:12px; opacity:.4; }
-.empty-text  { font-size:15px; color:var(--text2); font-weight:600; }
-.empty-sub   { font-size:13px; color:var(--text3); margin-top:6px; }
-.loading-overlay {
-  position:fixed; inset:0; background:rgba(248,249,251,.88);
-  z-index:300; display:none; align-items:center; justify-content:center; flex-direction:column; gap:14px;
-}
-.loading-overlay.show { display:flex; }
-.spinner {
-  width:40px; height:40px;
-  border:3px solid var(--border); border-top-color:var(--accent);
-  border-radius:50%; animation:spin .7s linear infinite;
-}
-@keyframes spin { to{transform:rotate(360deg)} }
-.loading-text { font-family:var(--font-mono); font-size:13px; color:var(--text2); }
-.toast {
-  position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
-  z-index:400; background:var(--text); color:#fff;
-  border-radius:14px; padding:13px 22px;
-  font-size:14px; font-weight:500; white-space:nowrap;
-  box-shadow:var(--shadow-lg); transition:transform .3s cubic-bezier(.4,0,.2,1); pointer-events:none;
-}
-.toast.show    { transform:translateX(-50%) translateY(0); }
-.toast.success { background:var(--green); }
-.toast.error   { background:var(--red); }
+/* ── DETAIL ── */
+.detail-accno{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--accent);margin-bottom:2px}
+.detail-name{font-size:18px;font-weight:700;margin-bottom:8px}
+.detail-batch{display:inline-block;font-family:var(--fm);font-size:11px;background:var(--accent-lt);color:var(--accent);padding:4px 12px;border-radius:20px;border:1px solid rgba(249,115,22,.2);margin-bottom:16px}
+.detail-row{display:flex;gap:10px;align-items:flex-start;margin-bottom:10px}
+.detail-icon{width:28px;flex-shrink:0;font-size:18px}
+.detail-val{font-size:14px;color:var(--text);line-height:1.5}
+.detail-val-sub{font-size:11px;color:var(--text3);margin-top:2px}
+.detail-phone-big{font-family:var(--fm);font-size:22px;font-weight:600;color:var(--green);letter-spacing:1px}
+.detail-section-title{font-family:var(--fm);font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin:16px 0 10px;padding-top:16px;border-top:1px solid var(--border)}
+.strikes-row{display:flex;gap:6px;align-items:center;margin-bottom:16px}
+.strike-indicator{width:14px;height:14px;border-radius:50%;border:2px solid var(--border2);background:var(--bg3)}
+.strike-indicator.filled{background:var(--red);border-color:var(--red)}
+.strike-text{font-size:12px;color:var(--text3);font-family:var(--fm);margin-left:4px}
+.detail-action-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn-detail{flex:1;min-width:80px;padding:13px 10px;border-radius:14px;font-family:var(--fh);font-size:13px;font-weight:700;border:none;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:5px}
+.btn-call-big{background:var(--green);color:#fff}
+.btn-wa-big{background:#25D366;color:#fff}
+.btn-nav-big{background:var(--blue);color:#fff}
+.btn-log-big{background:var(--accent);color:#fff;flex:2}
+.btn-detail:active{transform:scale(.97)}
+
+/* ── TC BRIDGE ── */
+.tc-bridge{background:linear-gradient(135deg,#f8faff,#eff6ff);border:1px solid #bfdbfe;border-radius:12px;padding:14px;margin:16px 0;display:flex;gap:10px;align-items:flex-start}
+.tc-bridge-label{font-size:11px;font-family:var(--fm);color:var(--blue);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.tc-bridge-val{font-size:13px;color:var(--text);line-height:1.5}
+
+/* ── LOG FORM ── */
+.log-form-title{font-family:var(--fh);font-size:17px;font-weight:700;margin-bottom:16px}
+.outcome-group-label{font-size:10px;font-family:var(--fm);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;display:flex;align-items:center;gap:6px}
+.outcome-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:4px}
+.outcome-btn{padding:12px 8px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg3);color:var(--text2);cursor:pointer;transition:all .2s;text-align:center;font-size:12px;font-family:var(--fb);font-weight:600}
+.outcome-btn.sel-pos{background:var(--green-lt);border-color:#86efac;color:var(--green);font-weight:700}
+.outcome-btn.sel-pen{background:var(--amber-lt);border-color:#fde68a;color:var(--amber);font-weight:700}
+.outcome-btn.sel-iss{background:var(--red-lt);border-color:#fecaca;color:var(--red);font-weight:700}
+.outcome-btn.sel-dead{background:var(--purple-lt);border-color:#ddd6fe;color:var(--purple);font-weight:700}
+.appt-wrap{margin:12px 0;display:none}
+.textarea-field{width:100%;border:1.5px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-family:var(--fb);font-size:14px;outline:none;resize:none;background:var(--bg3);min-height:80px}
+.textarea-field:focus{border-color:var(--accent);background:#fff;box-shadow:0 0 0 3px rgba(249,115,22,.08)}
+.btn-submit-log{width:100%;padding:15px;background:linear-gradient(135deg,var(--accent),var(--accent-dk));border:none;border-radius:14px;color:#fff;font-family:var(--fh);font-size:16px;font-weight:700;cursor:pointer;margin-top:16px;transition:all .2s}
+.btn-submit-log:disabled{opacity:.45;cursor:not-allowed}
+.ts-banner{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
+.ts-label{font-size:10px;color:var(--text3);font-family:var(--fm);text-transform:uppercase;letter-spacing:.5px}
+.ts-val{font-size:12px;color:var(--text2);font-family:var(--fm)}
+
+/* ── EARNINGS PAGE ── */
+.earn-wrap{padding:16px}
+.earn-hero{background:linear-gradient(135deg,var(--accent),var(--accent-dk));border-radius:20px;padding:24px;color:#fff;margin-bottom:16px}
+.earn-hero-label{font-size:12px;opacity:.8;margin-bottom:6px;font-family:var(--fm)}
+.earn-hero-total{font-family:var(--fh);font-size:40px;font-weight:800;margin-bottom:6px}
+.earn-hero-sub{font-size:13px;opacity:.85}
+.earn-progress-bar-outer{background:rgba(255,255,255,.2);border-radius:6px;height:8px;margin-top:14px}
+.earn-progress-bar-inner{background:#fff;border-radius:6px;height:8px;transition:width .6s ease}
+.earn-bar-labels{display:flex;justify-content:space-between;margin-top:5px;font-size:10px;opacity:.7}
+.earn-kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.earn-kpi-cell{background:#fff;border:1px solid var(--border);border-radius:12px;padding:14px;text-align:center}
+.earn-kpi-val{font-family:var(--fh);font-size:22px;font-weight:800;color:var(--accent)}
+.earn-kpi-lbl{font-size:10px;color:var(--text3);margin-top:3px;font-family:var(--fm)}
+.earn-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.earn-card-title{font-family:var(--fh);font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.slab-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.slab-row:last-child{border-bottom:none}
+.slab-label{font-size:13px;color:var(--text);font-weight:600}
+.slab-rate{font-family:var(--fm);font-size:13px;color:var(--green);font-weight:700}
+.slab-row.active-slab{background:var(--green-lt);border-radius:10px;padding:10px 12px;border-color:transparent}
+.slab-row.active-slab .slab-label{color:var(--green)}
+.nudge-box{background:linear-gradient(135deg,var(--green-lt),#dcfce7);border:1px solid #86efac;border-radius:12px;padding:14px;margin-top:12px;display:flex;gap:10px;align-items:flex-start}
+.nudge-text{font-size:13px;font-weight:600;color:var(--green)}
+.lb-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)}
+.lb-row:last-child{border-bottom:none}
+.lb-rank{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
+.lb-rank.r1{background:var(--amber-lt)}
+.lb-rank.r2{background:#f1f5f9}
+.lb-rank.r3{background:#fff7ed}
+.lb-name{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.lb-bar-wrap{background:var(--bg3);border-radius:4px;height:6px;flex:1;margin:0 8px}
+.lb-bar{background:var(--accent);border-radius:4px;height:6px;transition:width .5s ease}
+.lb-count{font-family:var(--fm);font-size:12px;color:var(--accent);font-weight:700}
+.lb-me .lb-name{color:var(--accent)}
+.me-tag{background:var(--accent);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:20px;font-family:var(--fm)}
+
+/* ── MISC ── */
+.empty-state{text-align:center;padding:60px 20px}
+.empty-icon{font-size:48px;margin-bottom:12px;opacity:.4}
+.empty-text{font-size:15px;color:var(--text2);font-weight:600}
+.empty-sub{font-size:13px;color:var(--text3);margin-top:6px}
+.loading-overlay{position:fixed;inset:0;background:rgba(248,249,251,.88);z-index:300;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px}
+.loading-overlay.show{display:flex}
+.spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:var(--fm);font-size:13px;color:var(--text2)}
+.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(80px);z-index:400;background:var(--text);color:#fff;border-radius:14px;padding:13px 22px;font-size:14px;font-weight:500;white-space:nowrap;box-shadow:var(--shadow-lg);transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.toast.success{background:var(--green)}
+.toast.error{background:var(--red)}
+.section-header{padding:12px 16px 4px;font-family:var(--fh);font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:space-between}
+.count-badge{background:var(--accent-lt);color:var(--accent);font-size:11px;font-family:var(--fm);padding:2px 8px;border-radius:20px;font-weight:700}
 </style>
 </head>
 <body>
 
-<div class="loading-overlay" id="loader">
-  <div class="spinner"></div>
-  <div class="loading-text" id="loaderText">Loading...</div>
-</div>
+<div class="loading-overlay" id="loader"><div class="spinner"></div><div class="loading-text" id="loaderText">Loading...</div></div>
 <div class="toast" id="toast"></div>
 
 <!-- LOGIN -->
@@ -376,58 +289,150 @@ body { background:var(--bg); color:var(--text); font-family:var(--font-body); mi
 </div>
 
 <!-- APP -->
-<div class="app" id="app" style="display:none;">
+<div class="app" id="app">
   <div class="header">
-    <div class="header-brand">
+    <div class="brand">
       <div class="brand-logo">VOA</div>
       <span class="brand-name">VOA</span>
       <span class="brand-role">TELECALLER</span>
     </div>
-    <div class="header-right">
+    <div class="hdr-right">
       <div class="staff-badge" id="headerBadge">TC_000</div>
       <button class="logout-btn" onclick="doLogout()">✕</button>
     </div>
   </div>
 
-  <div class="dash-wrap">
-    <div class="dash-greeting" id="dashGreeting">Good morning</div>
-    <div class="dash-date" id="dashDate">—</div>
-    <div class="dash-cards">
-      <div class="dash-card orange"><div class="dash-card-icon">📋</div><div class="dash-card-val" id="cntTotal">—</div><div class="dash-card-lbl">My Accounts</div></div>
-      <div class="dash-card green"><div class="dash-card-icon">📅</div><div class="dash-card-val" id="cntAppt">—</div><div class="dash-card-lbl">Appts Fixed</div></div>
-      <div class="dash-card blue"><div class="dash-card-icon">📞</div><div class="dash-card-val" id="cntCalled">—</div><div class="dash-card-lbl">Calls Today</div></div>
-      <div class="dash-card red"><div class="dash-card-icon">⚡</div><div class="dash-card-val" id="cntPending">—</div><div class="dash-card-lbl">Still Pending</div></div>
+  <!-- PAGE: DASHBOARD -->
+  <div class="page on" id="pageDash">
+    <div class="dash-wrap">
+      <div class="dash-greeting" id="dashGreeting">Good morning</div>
+      <div class="dash-date" id="dashDate">—</div>
+      <div class="dash-cards">
+        <div class="dash-card orange"><div class="dash-card-icon">📋</div><div class="dash-card-val" id="cntTotal">—</div><div class="dash-card-lbl">My Accounts</div></div>
+        <div class="dash-card green"><div class="dash-card-icon">📅</div><div class="dash-card-val" id="cntAppt">—</div><div class="dash-card-lbl">Appts Fixed</div></div>
+        <div class="dash-card blue"><div class="dash-card-icon">📞</div><div class="dash-card-val" id="cntCalled">—</div><div class="dash-card-lbl">Calls Today</div></div>
+        <div class="dash-card red"><div class="dash-card-icon">⚡</div><div class="dash-card-val" id="cntPending">—</div><div class="dash-card-lbl">Still Pending</div></div>
+      </div>
+    </div>
+
+    <!-- Intelligence Panel -->
+    <div class="intel-panel" id="intelPanel">
+      <div class="intel-title">🧠 Recovery Intelligence</div>
+      <div class="intel-grid">
+        <div class="intel-item green-bg">
+          <div class="intel-item-label">Recovery Rate</div>
+          <div class="intel-item-val" id="intelRate">—</div>
+          <div class="intel-item-sub">This month's area avg</div>
+        </div>
+        <div class="intel-item amber-bg">
+          <div class="intel-item-label">Fraud Flags</div>
+          <div class="intel-item-val" id="intelFraud">0</div>
+          <div class="intel-item-sub">Already Collected flags</div>
+        </div>
+        <div class="intel-item">
+          <div class="intel-item-label">Forecast</div>
+          <div class="intel-item-val" id="intelForecast">—</div>
+          <div class="intel-item-sub">Predicted closures MTD</div>
+        </div>
+        <div class="intel-item">
+          <div class="intel-item-label">Aging Alerts</div>
+          <div class="intel-item-val red" id="intelAging" style="color:var(--red)">0</div>
+          <div class="intel-item-sub">Accounts &gt; 7 days</div>
+        </div>
+      </div>
+      <div class="intel-nudge" id="intelNudge" style="display:none">
+        <span style="font-size:18px">💰</span>
+        <span id="intelNudgeText">—</span>
+      </div>
     </div>
   </div>
 
-  <div class="filter-row">
-    <div class="chip active" onclick="setFilter('All',this)">All</div>
-    <div class="chip" onclick="setFilter('Fresh',this)">Fresh</div>
-    <div class="chip" onclick="setFilter('Called',this)">Called</div>
-    <div class="chip" onclick="setFilter('Appt Fixed',this)">Appt Fixed</div>
-    <div class="chip" onclick="setFilter('Rescheduled',this)">Rescheduled</div>
-    <div class="chip" onclick="setFilter('Not Reachable',this)">Not Reachable</div>
-  </div>
-
-  <div class="search-wrap">
-    <div class="search-box">
-      <span style="color:var(--text3);font-size:16px;">🔍</span>
-      <input class="search-input" id="searchInput" placeholder="Search account / name / area…" oninput="renderList()">
+  <!-- PAGE: ACCOUNTS -->
+  <div class="page" id="pageAccounts">
+    <div class="filter-row">
+      <div class="chip active" onclick="setFilter('All',this)">All</div>
+      <div class="chip" onclick="setFilter('Fresh',this)">Fresh</div>
+      <div class="chip" onclick="setFilter('Called',this)">Called</div>
+      <div class="chip" onclick="setFilter('Appt Fixed',this)">Appt Fixed</div>
+      <div class="chip" onclick="setFilter('Rescheduled',this)">Rescheduled</div>
+      <div class="chip" onclick="setFilter('Not Reachable',this)">Not Reachable</div>
+      <div class="chip" onclick="setFilter('__ISSUES__',this)">Issues</div>
+      <div class="chip" onclick="setFilter('__STRIKE__',this)">⚡ Strike</div>
+    </div>
+    <div class="search-wrap">
+      <div class="search-box">
+        <span style="color:var(--text3);font-size:16px">🔍</span>
+        <input class="search-input" id="searchInput" placeholder="Search account / name / area…" oninput="renderList()">
+      </div>
+    </div>
+    <div class="list-section">
+      <div class="section-header">
+        <span id="listCount" style="font-size:11px;color:var(--text3);font-family:var(--fm)"></span>
+        <button onclick="dlExcel()" style="background:none;border:1px solid var(--border);border-radius:8px;padding:5px 10px;font-size:11px;font-family:var(--fm);color:var(--text2);cursor:pointer">⬇ Excel</button>
+      </div>
+      <div id="accountList"></div>
+      <div class="empty-state" id="emptyState" style="display:none">
+        <div class="empty-icon">🔍</div>
+        <div class="empty-text">No accounts found</div>
+        <div class="empty-sub">Try a different filter or search</div>
+      </div>
     </div>
   </div>
 
-  <div class="list-section">
-    <div class="list-count" id="listCount"></div>
-    <div id="accountList"></div>
-    <div class="empty-state" id="emptyState" style="display:none;">
-      <div class="empty-icon">🔍</div>
-      <div class="empty-text">No accounts found</div>
-      <div class="empty-sub">Try a different filter or search</div>
+  <!-- PAGE: EARNINGS -->
+  <div class="page" id="pageEarnings">
+    <div class="earn-wrap">
+      <div class="earn-hero">
+        <div class="earn-hero-label">Estimated Payout This Month</div>
+        <div class="earn-hero-total" id="earnTotal">₹0</div>
+        <div class="earn-hero-sub" id="earnSub">0 closures × ₹300 per collection</div>
+        <div class="earn-progress-bar-outer">
+          <div class="earn-progress-bar-inner" id="earnBar" style="width:0%"></div>
+        </div>
+        <div class="earn-bar-labels"><span>₹0</span><span id="earnBarMax">Target: ₹9,000</span></div>
+      </div>
+
+      <div class="earn-kpi">
+        <div class="earn-kpi-cell"><div class="earn-kpi-val" id="earnToday">0</div><div class="earn-kpi-lbl">Today</div></div>
+        <div class="earn-kpi-cell"><div class="earn-kpi-val" style="color:var(--green)" id="earnMTD">0</div><div class="earn-kpi-lbl">MTD Total</div></div>
+        <div class="earn-kpi-cell"><div class="earn-kpi-val" style="color:var(--amber)" id="earnPct">0%</div><div class="earn-kpi-lbl">vs Target</div></div>
+      </div>
+
+      <div class="earn-card">
+        <div class="earn-card-title">📊 Incentive Structure</div>
+        <div class="slab-row">
+          <div class="slab-label">Per Collection (Verified)</div>
+          <div class="slab-rate">₹300</div>
+        </div>
+        <div class="slab-row">
+          <div class="slab-label">Fraud Penalty (confirmed)</div>
+          <div class="slab-rate" style="color:var(--red)">-₹500</div>
+        </div>
+        <div id="earnNudgeBox" class="nudge-box" style="display:none">
+          <span style="font-size:20px">🚀</span>
+          <div><div class="nudge-text" id="earnNudgeText">—</div></div>
+        </div>
+      </div>
+
+      <div class="earn-card">
+        <div class="earn-card-title">🏆 Team Leaderboard (MTD)</div>
+        <div id="earnLeaderboard"></div>
+      </div>
+
+      <button onclick="loadEarnings()" style="width:100%;padding:14px;background:var(--accent);color:#fff;border:none;border-radius:14px;font-family:var(--fh);font-size:14px;font-weight:700;cursor:pointer;margin-top:4px">🔄 Refresh Earnings</button>
     </div>
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="bnav">
+    <button class="ni on" id="navDash" onclick="switchPage('Dash')"><span class="ico">🏠</span>Home</button>
+    <button class="ni" id="navAccounts" onclick="switchPage('Accounts')"><span class="ico">📋</span>Accounts</button>
+    <button class="ni" id="navEarnings" onclick="switchPage('Earnings')"><span class="ico">💰</span>Earnings</button>
   </div>
 </div>
 
-<div class="sheet-overlay" id="overlay" onclick="closeSheet()"></div>
+<!-- BOTTOM SHEET -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
 <div class="bottom-sheet" id="mainSheet">
   <div class="sheet-handle"><div class="sheet-handle-bar"></div></div>
   <div class="sheet-header">
@@ -438,14 +443,22 @@ body { background:var(--bg); color:var(--text); font-family:var(--font-body); mi
 </div>
 
 <script>
-const API_URL='https://script.google.com/macros/s/AKfycbwsGJ0HI7smnWk-3Cpcno6BJbRwbWHe3ZaAhPavTmHE4IrIG9Kk0t_7mQqh9x_fTHnI/exec', CLIENT_ID='LIVARA_CBE';
-let session=null, allAccounts=[], activeFilter='All', activeAccount=null, selectedOutcome='';
+// ══ CONFIG ══
+const API_URL='https://script.google.com/macros/s/AKfycbwsGJ0HI7smnWk-3Cpcno6BJbRwbWHe3ZaAhPavTmHE4IrIG9Kk0t_7mQqh9x_fTHnI/exec';
+const CLIENT_ID='LIVARA_CBE';
+const TC_TARGET=30;
+const TC_RATE=300;
 
-async function api(p){p.client_id=p.clientId||CLIENT_ID;p.token=session?.token;try{const r=await fetch(API_URL+'?'+new URLSearchParams(p));return await r.json();}catch(e){return{success:false,error:e.message};}}
+// ══ STATE ══
+let session=null, allAccounts=[], activeFilter='All', activeAccount=null, selectedOutcome='', tsInterval=null;
+
+// ══ API ══
+async function api(p){p.client_id=p.client_id||CLIENT_ID;p.token=session?.token;try{const r=await fetch(API_URL+'?'+new URLSearchParams(p));return await r.json();}catch(e){return{success:false,error:e.message};}}
 async function apiPost(action,body){body.client_id=CLIENT_ID;body.token=session?.token;body.action=action;try{const r=await fetch(API_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});return await r.json();}catch(e){return{success:false,error:e.message};}}
 
+// ══ LOGIN ══
 async function doLogin(){
-  const city=document.getElementById('loginCity').value.trim();
+  const city=document.getElementById('loginCity').value;
   const staffId=document.getElementById('loginStaffId').value.trim().toUpperCase();
   const pin=document.getElementById('loginPin').value.trim();
   document.getElementById('loginError').style.display='none';
@@ -461,7 +474,7 @@ function showErr(m){const e=document.getElementById('loginError');e.textContent=
 
 function startApp(){
   document.getElementById('loginScreen').style.display='none';
-  document.getElementById('app').style.display='block';
+  document.getElementById('app').style.display='flex';
   document.getElementById('headerBadge').textContent=session.staffId+' · '+session.city;
   const h=new Date().getHours();
   document.getElementById('dashGreeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+(session.staffName||session.staffId);
@@ -469,22 +482,67 @@ function startApp(){
   loadData();
 }
 
+// ══ DATA LOADING ══
 async function loadData(){
   showLoader('Loading your accounts...');
-  const[accRes,dashRes]=await Promise.all([api({action:'get_tc_accounts',city:session.city,staffId:session.staffId}),api({action:'get_tc_dashboard',city:session.city,staffId:session.staffId})]);
+  const[accRes,dashRes]=await Promise.all([
+    api({action:'get_tc_accounts',city:session.city,staffId:session.staffId}),
+    api({action:'get_tc_dashboard',city:session.city,staffId:session.staffId})
+  ]);
   hideLoader();
-  allAccounts=accRes.success?(accRes.data||[]):demoAccounts();
+  allAccounts=accRes.success&&accRes.data?.length?(accRes.data):demoAccounts();
+  // Sort smart queue
+  allAccounts=smartSort(allAccounts);
   renderList();
-  if(dashRes.success){const d=dashRes.data;document.getElementById('cntTotal').textContent=d.total??allAccounts.length;document.getElementById('cntAppt').textContent=d.appts??0;document.getElementById('cntCalled').textContent=d.callsToday??0;document.getElementById('cntPending').textContent=d.pending??0;}
-  else{document.getElementById('cntTotal').textContent=allAccounts.length;['cntAppt','cntCalled','cntPending'].forEach(id=>document.getElementById(id).textContent='—');}
+  if(dashRes.success){
+    const d=dashRes.data;
+    document.getElementById('cntTotal').textContent=d.total??allAccounts.length;
+    document.getElementById('cntAppt').textContent=d.apptFixed??d.appts??0;
+    document.getElementById('cntCalled').textContent=d.callsMadeToday??d.callsToday??0;
+    document.getElementById('cntPending').textContent=d.pending??0;
+  }else{
+    document.getElementById('cntTotal').textContent=allAccounts.length;
+    ['cntAppt','cntCalled','cntPending'].forEach(id=>document.getElementById(id).textContent='—');
+  }
+  updateIntelPanel();
 }
 
-function setFilter(f,el){activeFilter=f;document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');renderList();}
+// ══ SMART SORT — 5-level priority ══
+function smartSort(accounts){
+  const today=new Date().toISOString().slice(0,10);
+  function priority(a){
+    const apptStr=a.apptDate?(a.apptDate.length===10?a.apptDate:new Date(a.apptDate).toISOString().slice(0,10)):'';
+    if(a.status==='Appt Fixed'&&apptStr===today)return 1;
+    if(a.status==='Appt Fixed'&&apptStr<today&&apptStr)return 2;
+    if(['Rescheduled','Not Reachable'].includes(a.status))return 3;
+    if(a.status==='Fresh')return 4;
+    return 5;
+  }
+  return [...accounts].sort((a,b)=>{
+    const p=priority(a)-priority(b);
+    if(p!==0)return p;
+    return (b.recoveryScore||0)-(a.recoveryScore||0);
+  });
+}
+
+// ══ FILTERS ══
+function setFilter(f,el){
+  activeFilter=f;
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('active'));
+  el.classList.add('active');
+  renderList();
+}
+
+const ISSUE_STATUSES=['Refund Issue','Reconnection','Mail Confirmation','Junction Box Issue','Issue'];
 
 function renderList(){
   const q=(document.getElementById('searchInput').value||'').toLowerCase();
   const list=allAccounts.filter(a=>{
-    if(activeFilter!=='All'&&a.status!==activeFilter)return false;
+    let matchF=true;
+    if(activeFilter==='__ISSUES__')matchF=ISSUE_STATUSES.some(s=>a.status===s||a.status?.includes('Issue'));
+    else if(activeFilter==='__STRIKE__')matchF=(a.strikeCount||0)>=1;
+    else if(activeFilter!=='All')matchF=a.status===activeFilter;
+    if(!matchF)return false;
     if(q){const hay=[a.accountNo,a.name,a.mobile,a.area,a.address].join(' ').toLowerCase();if(!hay.includes(q))return false;}
     return true;
   });
@@ -492,101 +550,273 @@ function renderList(){
   document.getElementById('listCount').textContent=list.length+' account'+(list.length!==1?'s':'');
   if(!list.length){container.innerHTML='';empty.style.display='block';return;}
   empty.style.display='none';
-  container.innerHTML=list.map(a=>`
-    <div class="account-card" onclick="openDetail('${a.accountNo}')">
-      <div class="card-top">
-        <div>
-          <div class="card-accno">${a.accountNo}</div>
-          <div class="card-name">${a.name||'—'}</div>
-          <div class="card-phone">📞 ${a.mobile||'—'}</div>
-        </div>
-        <span class="status-badge ${sClass(a.status)}">${a.status||'FRESH'}</span>
-      </div>
-      <div class="card-addr">📍 ${a.address||'—'}</div>
-      <div class="card-footer">
-        ${Array.from({length:3}).map((_,i)=>`<div class="strike-dot" style="${i<(a.strikeCount||0)?'':'background:transparent;border:2px solid var(--border2);'}"></div>`).join('')}
-        ${a.apptDate?`<span class="card-appt">🗓 ${a.apptDate}</span>`:''}
-        <span class="card-area">${a.area||''}</span>
-      </div>
-      <div class="card-action-row">
-        <button class="btn-sm btn-call" onclick="event.stopPropagation();callNum('${a.mobile}')">📞 Call</button>
-        <button class="btn-sm btn-wa"   onclick="event.stopPropagation();openWA('${a.mobile}','${a.name}','${a.accountNo}')">💬 WA</button>
-        <button class="btn-sm btn-log"  onclick="event.stopPropagation();openLog('${a.accountNo}')">✏️ Log Call</button>
-      </div>
-    </div>`).join('');
+  container.innerHTML=list.map(a=>buildCard(a)).join('');
 }
 
-function sClass(s){return{'Fresh':'s-fresh','Called':'s-called','Appt Fixed':'s-appt','Rescheduled':'s-rescheduled','Not Visited':'s-notvst','Not Reachable':'s-notvst','Issue':'s-issue','Collected':'s-collected'}[s]||'s-default';}
+function buildCard(a){
+  const sc=a.recoveryScore||0;
+  const scoreClass=sc>=70?'score-hi':sc>=40?'score-md':'score-lo';
+  const scoreLabel=sc>=70?'🔥 High':sc>=40?'⚡ Med':'● Low';
+  const strikes=Array.from({length:3}).map((_,i)=>`<div class="strike-dot" style="${i<(a.strikeCount||0)?'':'background:transparent;border:2px solid var(--border2);'}"></div>`).join('');
+  const remarkHtml=a.tcRemark?`<div class="card-remark">💬 ${esc(a.tcRemark)}</div>`:'';
+  const execHtml=a.execStaffId?`<div class="card-exec">👷 Exec: ${esc(a.execStaffId)}</div>`:'';
+  return`<div class="account-card" onclick="openDetail('${a.accountNo}')">
+    <div class="card-top">
+      <div>
+        <div class="card-accno">${esc(a.accountNo)}</div>
+        <div class="card-name">${esc(a.name||'—')}</div>
+        <div class="card-phone">📞 ${esc(a.mobile||'—')}</div>
+      </div>
+      <span class="status-badge ${sClass(a.status)}">${esc(a.status||'FRESH')}</span>
+    </div>
+    <div class="card-addr">📍 ${esc(a.address||'—')}</div>
+    ${remarkHtml}${execHtml}
+    <div class="card-footer">
+      ${strikes}
+      ${a.apptDate?`<span class="card-appt">🗓 ${esc(a.apptDate)}</span>`:''}
+      ${sc>0?`<span class="score-badge ${scoreClass}">${scoreLabel} ${sc}</span>`:''}
+      <span class="card-area">${esc(a.area||'')}</span>
+    </div>
+    <div class="card-action-row">
+      <button class="btn-sm btn-call" onclick="event.stopPropagation();callNum('${esc(a.mobile)}')">📞 Call</button>
+      <button class="btn-sm btn-wa"   onclick="event.stopPropagation();openWA('${esc(a.mobile)}','${esc(a.name||'')}','${esc(a.accountNo)}')">💬 WA</button>
+      <button class="btn-sm btn-log"  onclick="event.stopPropagation();openLog('${a.accountNo}')">✏️ Log</button>
+      <button class="btn-sm btn-nav"  onclick="event.stopPropagation();navigate('${esc(a.address||'')}')">🗺</button>
+    </div>
+  </div>`;
+}
 
+function sClass(s){
+  if(!s)return 's-fresh';
+  if(s==='Fresh')return 's-fresh';
+  if(s==='Called')return 's-called';
+  if(s==='Appt Fixed')return 's-appt';
+  if(s==='Rescheduled')return 's-rescheduled';
+  if(s==='Not Reachable'||s==='Not Visited')return 's-notvst';
+  if(ISSUE_STATUSES.some(x=>s===x||s.includes('Issue')))return 's-issue';
+  if(s==='Collected')return 's-collected';
+  if(s.includes('Strike'))return 's-strike';
+  return 's-default';
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+// ══ DETAIL SHEET ══
 function openDetail(accNo){
   const a=allAccounts.find(x=>x.accountNo===accNo);if(!a)return;activeAccount=a;
   document.getElementById('sheetTitle').textContent=a.accountNo;
+  const sc=a.recoveryScore||0;
+  const scoreClass=sc>=70?'score-hi':sc>=40?'score-md':'score-lo';
+  const scoreLabel=sc>=70?'🔥 High Priority':sc>=40?'⚡ Medium Priority':'● Low Priority';
   document.getElementById('sheetBody').innerHTML=`
-    <div class="detail-accno">${a.accountNo}</div>
-    <div class="detail-name">${a.name||'—'}</div>
-    <span class="detail-batch">${a.batchNo||'—'}</span>
-    <div class="detail-row"><div class="detail-icon">📞</div><div><div class="detail-phone-big">${a.mobile||'—'}</div><div class="detail-val-sub">Customer Mobile</div></div></div>
-    <div class="detail-row"><div class="detail-icon">📍</div><div><div class="detail-val">${a.address||'—'}</div><div class="detail-val-sub">${a.area||''} · ${a.city||''}</div></div></div>
-    ${a.apptDate?`<div class="detail-row"><div class="detail-icon">🗓</div><div><div class="detail-val" style="color:var(--green);font-weight:600;">${a.apptDate}</div><div class="detail-val-sub">Appointment Date</div></div></div>`:''}
-    ${a.execRemark?`<div class="detail-row"><div class="detail-icon">🗒</div><div><div class="detail-val">${a.execRemark}</div><div class="detail-val-sub">Exec Remark</div></div></div>`:''}
+    <div class="detail-accno">${esc(a.accountNo)}</div>
+    <div class="detail-name">${esc(a.name||'—')}</div>
+    <span class="detail-batch">${esc(a.batchNo||'—')}</span>
+    ${sc>0?`<span class="score-badge ${scoreClass}" style="display:inline-block;margin-bottom:12px">${scoreLabel} (${sc}/100)</span>`:''}
+    <div class="detail-row"><div class="detail-icon">📞</div><div><div class="detail-phone-big">${esc(a.mobile||'—')}</div><div class="detail-val-sub">Customer Mobile</div></div></div>
+    <div class="detail-row"><div class="detail-icon">📍</div><div><div class="detail-val">${esc(a.address||'—')}</div><div class="detail-val-sub">${esc(a.area||'')} · ${esc(a.city||'')}</div></div></div>
+    ${a.apptDate?`<div class="detail-row"><div class="detail-icon">🗓</div><div><div class="detail-val" style="color:var(--green);font-weight:600">${esc(a.apptDate)}</div><div class="detail-val-sub">Appointment Date</div></div></div>`:''}
+    ${a.execStaffId?`<div class="detail-row"><div class="detail-icon">👷</div><div><div class="detail-val">${esc(a.execStaffId)}</div><div class="detail-val-sub">Assigned Executive</div></div></div>`:''}
+    ${a.tcRemark?`<div class="tc-bridge"><span style="font-size:20px">🗣</span><div><div class="tc-bridge-label">Last Remark</div><div class="tc-bridge-val">${esc(a.tcRemark)}</div></div></div>`:''}
     <div class="detail-section-title">Strike Status</div>
     <div class="strikes-row">
-      ${Array.from({length:3}).map((_,i)=>`<div class="strike-indicator ${i<(a.strikeCount||0)?'filled':''}"></div>`).join('')}
+      ${Array.from({length:3}).map((_,i)=>`<div class="strike-indicator${i<(a.strikeCount||0)?' filled':''}"></div>`).join('')}
       <span class="strike-text">${a.strikeCount||0} / 3 strikes</span>
     </div>
     <div class="detail-action-row">
-      <button class="btn-detail btn-call-big" onclick="callNum('${a.mobile}')">📞 Call</button>
-      <button class="btn-detail btn-wa-big"   onclick="openWA('${a.mobile}','${a.name}','${a.accountNo}')">💬 WA</button>
-      <button class="btn-detail btn-log-big"  onclick="openLog('${a.accountNo}')">✏️ Log Call</button>
-    </div>`;
+      <button class="btn-detail btn-call-big" onclick="callNum('${esc(a.mobile)}')">📞 Call</button>
+      <button class="btn-detail btn-wa-big"   onclick="openWA('${esc(a.mobile)}','${esc(a.name||'')}','${esc(a.accountNo)}')">💬 WA</button>
+      <button class="btn-detail btn-nav-big"  onclick="navigate('${esc(a.address||'')}')">🗺 Navigate</button>
+    </div>
+    <button class="btn-detail btn-log-big" style="width:100%;margin-top:10px" onclick="openLog('${a.accountNo}')">✏️ Log Call</button>`;
   openSheet();
 }
 
+// ══ LOG CALL — 18 OUTCOMES ══
+const OUTCOMES=[
+  {group:'✅ Positive',cls:'pos',items:['Appt Fixed','Future Appointment']},
+  {group:'⏳ Pending',cls:'pen',items:['Rescheduled','Out of Station','Call Back Request','Switch Off','RNR / Busy','Incoming Barred']},
+  {group:'⚠️ Issues',cls:'iss',items:['Refund Issue','Reconnection','Mail Confirmation','Junction Box Issue']},
+  {group:'❌ Dead / Terminal',cls:'dead',items:['Wrong Number','Not Willing','Already Collected','Line Activated','Shifted','Own / Lost / Missing Router']},
+];
+
 function openLog(accNo){
   const a=allAccounts.find(x=>x.accountNo===accNo);if(!a)return;activeAccount=a;selectedOutcome='';
+  if(tsInterval)clearInterval(tsInterval);
   document.getElementById('sheetTitle').textContent='Log Call — '+accNo;
-  const outcomes=['Called','Appt Fixed','Rescheduled','Not Reachable','Wrong Number','DND'];
+  const nowStr=()=>new Date().toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const outcomeHTML=OUTCOMES.map(g=>`
+    <div class="outcome-group-label">${g.group}</div>
+    <div class="outcome-grid">${g.items.map(o=>`<button class="outcome-btn" data-cls="${g.cls}" onclick="selOutcome('${o}',this)">${o}</button>`).join('')}</div>
+  `).join('');
   document.getElementById('sheetBody').innerHTML=`
+    <div class="ts-banner"><span class="ts-label">Call Timestamp</span><span class="ts-val" id="liveClock">—</span></div>
     <div class="log-form-title">What happened on this call?</div>
-    <div class="outcome-grid">${outcomes.map(o=>`<button class="outcome-btn" onclick="selOutcome('${o}',this)">${o}</button>`).join('')}</div>
-    <div class="appt-wrap" id="apptWrap"><label class="form-label">Appointment Date</label><input type="date" class="form-input" id="apptDate"></div>
-    <div class="form-group"><label class="form-label">TC Remark</label><textarea class="textarea-field" id="tcRemark" placeholder="Notes about this call…"></textarea></div>
+    ${outcomeHTML}
+    <div class="appt-wrap" id="apptWrap">
+      <label class="form-label" style="margin-top:8px">Appointment Date</label>
+      <input type="date" class="form-input" id="apptDate">
+    </div>
+    <div style="margin-top:12px">
+      <label class="form-label">TC Remark</label>
+      <textarea class="textarea-field" id="tcRemark" placeholder="Notes about this call…"></textarea>
+    </div>
     <button class="btn-submit-log" id="btnSubmit" onclick="submitLog()" disabled>Submit Call Log</button>`;
+  tsInterval=setInterval(()=>{const el=document.getElementById('liveClock');if(el)el.textContent=nowStr();},1000);
+  document.getElementById('liveClock').textContent=nowStr();
   openSheet();
 }
 
 function selOutcome(o,el){
   selectedOutcome=o;
-  document.querySelectorAll('.outcome-btn').forEach(b=>b.className='outcome-btn');
-  el.className='outcome-btn sel-'+o;
+  document.querySelectorAll('.outcome-btn').forEach(b=>{b.className='outcome-btn';});
+  el.className='outcome-btn sel-'+el.dataset.cls;
   document.getElementById('btnSubmit').disabled=false;
-  const w=document.getElementById('apptWrap');if(w)w.style.display=o==='Appt Fixed'?'block':'none';
+  const w=document.getElementById('apptWrap');
+  if(w)w.style.display=(o==='Appt Fixed'||o==='Future Appointment')?'block':'none';
 }
 
 async function submitLog(){
   if(!selectedOutcome)return;
+  if(tsInterval)clearInterval(tsInterval);
   const remark=document.getElementById('tcRemark').value.trim();
-  const apptDate=selectedOutcome==='Appt Fixed'?document.getElementById('apptDate').value:'';
+  const apptDate=(['Appt Fixed','Future Appointment'].includes(selectedOutcome))?document.getElementById('apptDate').value:'';
   showLoader('Logging call...');
   const res=await apiPost('log_call',{city:session.city,staffId:session.staffId,accountNo:activeAccount.accountNo,outcome:selectedOutcome,tcRemark:remark,apptDate});
   hideLoader();
   if(res.success){
     toast('Call logged — '+selectedOutcome,'success');
     const idx=allAccounts.findIndex(x=>x.accountNo===activeAccount.accountNo);
-    if(idx!==-1){allAccounts[idx].status=selectedOutcome;if(apptDate)allAccounts[idx].apptDate=apptDate;}
+    if(idx!==-1){
+      allAccounts[idx].status=selectedOutcome;
+      if(apptDate)allAccounts[idx].apptDate=apptDate;
+      if(remark)allAccounts[idx].tcRemark=remark;
+    }
+    allAccounts=smartSort(allAccounts);
     renderList();closeSheet();
   }else{toast(res.error||'Failed to log call','error');}
 }
 
+// ══ INTELLIGENCE PANEL ══
+function updateIntelPanel(){
+  const total=allAccounts.length;
+  const closuresMTD=allAccounts.filter(a=>a.status==='Collected').length;
+  const calledToday=allAccounts.filter(a=>a.lastCalledToday).length||0;
+  const aging=allAccounts.filter(a=>{
+    if(!a.updatedAt)return false;
+    const days=(Date.now()-new Date(a.updatedAt))/(86400000);
+    return days>7;
+  }).length;
+  const fraudFlags=allAccounts.filter(a=>a.isFraudFlagged).length;
+  const rate=total?Math.round((closuresMTD/total)*100):0;
+  const dailyPace=calledToday||1;
+  const daysLeft=Math.max(1,30-new Date().getDate());
+  const forecast=closuresMTD+(dailyPace*daysLeft*0.25);
+  document.getElementById('intelRate').textContent=rate+'%';
+  document.getElementById('intelFraud').textContent=fraudFlags;
+  document.getElementById('intelForecast').textContent=Math.round(forecast)+' est.';
+  document.getElementById('intelAging').textContent=aging;
+  const toTarget=TC_TARGET-closuresMTD;
+  const nudge=document.getElementById('intelNudge');
+  const nudgeText=document.getElementById('intelNudgeText');
+  if(toTarget>0){
+    nudge.style.display='flex';
+    nudgeText.textContent=toTarget+' more closures = ₹'+toTarget*TC_RATE+' extra this month!';
+  }else{
+    nudge.style.display='flex';
+    nudgeText.textContent='🎉 Target hit! ₹'+(closuresMTD*TC_RATE)+' earned this month!';
+  }
+}
+
+// ══ EARNINGS ══
+async function loadEarnings(){
+  showLoader('Loading earnings...');
+  const res=await api({action:'get_tc_incentive_data',city:session.city,staffId:session.staffId});
+  hideLoader();
+  const closuresMTD=res.success?(res.data?.closuresMTD||0):allAccounts.filter(a=>a.status==='Collected').length;
+  const earn=closuresMTD*TC_RATE;
+  const pct=Math.min(100,Math.round((closuresMTD/TC_TARGET)*100));
+  const targetEarn=TC_TARGET*TC_RATE;
+  document.getElementById('earnTotal').textContent='₹'+earn.toLocaleString('en-IN');
+  document.getElementById('earnSub').textContent=closuresMTD+' closures × ₹'+TC_RATE+' per collection';
+  document.getElementById('earnBarMax').textContent='Target: ₹'+targetEarn.toLocaleString('en-IN');
+  setTimeout(()=>document.getElementById('earnBar').style.width=pct+'%',100);
+  document.getElementById('earnMTD').textContent=closuresMTD;
+  document.getElementById('earnPct').textContent=pct+'%';
+  document.getElementById('earnToday').textContent=allAccounts.filter(a=>a.lastCalledToday).length||0;
+  const toTarget=TC_TARGET-closuresMTD;
+  const nb=document.getElementById('earnNudgeBox');
+  const nt=document.getElementById('earnNudgeText');
+  if(toTarget>0){nb.style.display='flex';nt.textContent='🚀 '+toTarget+' more closures = ₹'+(toTarget*TC_RATE)+' more this month!';}
+  else{nb.style.display='flex';nt.textContent='🔥 Target crushed! Excellent work!';}
+  // Leaderboard demo
+  const lb=document.getElementById('earnLeaderboard');
+  const lbData=[
+    {id:session.staffId,name:session.staffName||session.staffId,closures:closuresMTD,me:true},
+    ...['TC_002','TC_003','TC_004','TC_005','TC_006','TC_007'].filter(id=>id!==session.staffId).map((id,i)=>({id,name:id,closures:Math.max(0,closuresMTD+([3,-2,5,-1,4,-3][i]||0)),me:false}))
+  ].sort((a,b)=>b.closures-a.closures);
+  const maxC=lbData[0].closures||1;
+  lb.innerHTML=lbData.map((r,i)=>`
+    <div class="lb-row${r.me?' lb-me':''}">
+      <div class="lb-rank ${i===0?'r1':i===1?'r2':i===2?'r3':''}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</div>
+      <div class="lb-name">${esc(r.name)} ${r.me?'<span class="me-tag">YOU</span>':''}</div>
+      <div class="lb-bar-wrap"><div class="lb-bar" style="width:${Math.round((r.closures/maxC)*100)}%"></div></div>
+      <div class="lb-count">${r.closures}</div>
+    </div>`).join('');
+}
+
+// ══ PAGE NAVIGATION ══
+function switchPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('on'));
+  document.getElementById('page'+name).classList.add('on');
+  document.getElementById('nav'+name).classList.add('on');
+  if(name==='Earnings')loadEarnings();
+}
+
+// ══ ACTIONS ══
+function callNum(m){if(m&&m!=='—')window.location.href='tel:'+m;}
+function navigate(addr){if(addr)window.open('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(addr),'_blank');}
+function openWA(m,name,accNo){
+  if(!m||m==='—')return;
+  const num='91'+m.replace(/\D/g,'');
+  const msg=encodeURIComponent('Hi '+name+', this is regarding your ACT Fiber router (Account: '+accNo+'). Kindly arrange for return at your convenience.');
+  window.open('https://wa.me/'+num+'?text='+msg,'_blank');
+}
+
+function dlExcel(){
+  if(!allAccounts.length){toast('No accounts to download','error');return;}
+  toast('Excel download requires SheetJS library — available in full version','error');
+}
+
+// ══ SHEET ══
 function openSheet(){document.getElementById('overlay').classList.add('open');document.getElementById('mainSheet').classList.add('open');document.body.style.overflow='hidden';}
-function closeSheet(){document.getElementById('overlay').classList.remove('open');document.getElementById('mainSheet').classList.remove('open');document.body.style.overflow='';}
-function callNum(m){if(m)window.location.href='tel:'+m;}
-function openWA(m,name,accNo){if(!m)return;const num='91'+m.replace(/\D/g,'');const msg=encodeURIComponent('Hi '+name+', this is regarding your ACT Fiber router (Account: '+accNo+'). Kindly arrange for return.');window.open('https://wa.me/'+num+'?text='+msg,'_blank');}
+function closeSheet(){if(tsInterval)clearInterval(tsInterval);document.getElementById('overlay').classList.remove('open');document.getElementById('mainSheet').classList.remove('open');document.body.style.overflow='';}
+
+// ══ MISC ══
 function showLoader(t){document.getElementById('loaderText').textContent=t||'Loading...';document.getElementById('loader').classList.add('show');}
 function hideLoader(){document.getElementById('loader').classList.remove('show');}
-let _tt;function toast(msg,type){clearTimeout(_tt);const el=document.getElementById('toast');el.textContent=msg;el.className='toast '+(type||'');requestAnimationFrame(()=>el.classList.add('show'));_tt=setTimeout(()=>el.classList.remove('show'),3000);}
-function doLogout(){session=null;allAccounts=[];document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';closeSheet();}
-function demoAccounts(){return[{accountNo:'ACT001234',name:'Rajesh Kumar',mobile:'9876543210',address:'12 RS Puram Main Rd',area:'RS Puram',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:''},{accountNo:'ACT005678',name:'Priya Suresh',mobile:'9876501234',address:'45 Tatabad Cross St',area:'Tatabad',city:'CBE',status:'Called',batchNo:'VOA_MAR_2026_1',strikeCount:1,apptDate:''},{accountNo:'ACT009012',name:'Murugan Selvam',mobile:'9843210987',address:'8 Gandhipuram Ring Rd',area:'Gandhipuram',city:'CBE',status:'Appt Fixed',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'14 Mar 2026'},{accountNo:'ACT013456',name:'Kavitha Rajan',mobile:'9791234567',address:'67 Peelamedu Lake View',area:'Peelamedu',city:'CBE',status:'Rescheduled',batchNo:'VOA_MAR_2026_1',strikeCount:2,apptDate:''},{accountNo:'ACT017890',name:'Anand Krishnan',mobile:'9865432109',address:'23 Saibaba Colony',area:'Saibaba Colony',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:''}];}
+let _tt;
+function toast(msg,type){clearTimeout(_tt);const el=document.getElementById('toast');el.textContent=msg;el.className='toast '+(type||'');requestAnimationFrame(()=>el.classList.add('show'));_tt=setTimeout(()=>el.classList.remove('show'),3000);}
+function doLogout(){session=null;allAccounts=[];document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';}
+
+// ══ DEMO DATA ══
+function demoAccounts(){
+  const today=new Date().toISOString().slice(0,10);
+  const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
+  return[
+    {accountNo:'101000500001',name:'Rajesh Kumar',mobile:'9876543210',address:'12 RS Puram Main Rd',area:'RS Puram',city:'CBE',status:'Appt Fixed',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:today,recoveryScore:88,tcRemark:'Customer available morning',execStaffId:'EX_001'},
+    {accountNo:'101000500002',name:'Priya Suresh',mobile:'9876501234',address:'45 Tatabad Cross St',area:'Tatabad',city:'CBE',status:'Rescheduled',batchNo:'VOA_MAR_2026_1',strikeCount:1,apptDate:yesterday,recoveryScore:62,tcRemark:'Out of station, retry this week',execStaffId:'EX_002'},
+    {accountNo:'101000500003',name:'Murugan Selvam',mobile:'9843210987',address:'8 Gandhipuram Ring Rd',area:'Gandhipuram',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'',recoveryScore:45,tcRemark:'',execStaffId:''},
+    {accountNo:'101000500004',name:'Kavitha Rajan',mobile:'9791234567',address:'67 Peelamedu Lake View',area:'Peelamedu',city:'CBE',status:'Called',batchNo:'VOA_MAR_2026_1',strikeCount:2,apptDate:'',recoveryScore:35,tcRemark:'Try Sunday morning only',execStaffId:'EX_003'},
+    {accountNo:'101000500005',name:'Anand Krishnan',mobile:'9865432109',address:'23 Saibaba Colony',area:'Saibaba Colony',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'',recoveryScore:72,tcRemark:'',execStaffId:''},
+    {accountNo:'101000500006',name:'Sumathi R',mobile:'9755188200',address:'23 Gandhi Nagar, Peelamedu',area:'Peelamedu',city:'CBE',status:'Issue',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'',recoveryScore:20,tcRemark:'Refund issue pending with ACT',execStaffId:''},
+    {accountNo:'101000500007',name:'Ramkumar T',mobile:'9440012345',address:'14 Kamaraj St, RS Puram',area:'RS Puram',city:'CBE',status:'Appt Fixed',batchNo:'VOA_MAR_2026_2',strikeCount:0,apptDate:today,recoveryScore:91,tcRemark:'Very cooperative, fixed for 10am',execStaffId:'EX_001'},
+    {accountNo:'101000500008',name:'Vimala S',mobile:'9811244300',address:'22 Nehru Nagar, Peelamedu',area:'Peelamedu',city:'CBE',status:'Not Reachable',batchNo:'VOA_MAR_2026_2',strikeCount:0,apptDate:'',recoveryScore:30,tcRemark:'RNR 3 times',execStaffId:''},
+    {accountNo:'101000500009',name:'Saranya K',mobile:'9788433200',address:'25 Bharathi Park Rd',area:'Coimbatore North',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_2',strikeCount:0,apptDate:'',recoveryScore:55,tcRemark:'',execStaffId:''},
+    {accountNo:'101000500010',name:'Muthukumar P',mobile:'9443255000',address:'9 New Scheme Rd, Ganapathy',area:'Ganapathy',city:'CBE',status:'Called',batchNo:'VOA_MAR_2026_2',strikeCount:1,apptDate:'',recoveryScore:42,tcRemark:'Busy, callback tomorrow',execStaffId:''},
+  ];
+}
+
 document.getElementById('loginPin').addEventListener('keyup',e=>{if(e.key==='Enter')doLogin();});
 </script>
 </body>
