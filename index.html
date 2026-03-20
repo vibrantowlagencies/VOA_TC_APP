@@ -443,6 +443,27 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     </div>
   </div>
 
+  <!-- REPORT PAGE -->
+  <div class="page" id="pageReport">
+    <div style="padding:16px">
+      <div class="rpt-hero">
+        <div class="rpt-hero-title">📊 My Daily Report</div>
+        <div class="rpt-hero-sub" id="rptDate">—</div>
+        <div class="rpt-stats">
+          <div class="rpt-stat"><div class="rpt-stat-val" id="rptTotal">0</div><div class="rpt-stat-lbl">Assigned</div></div>
+          <div class="rpt-stat"><div class="rpt-stat-val" id="rptCalled">0</div><div class="rpt-stat-lbl">Called</div></div>
+          <div class="rpt-stat"><div class="rpt-stat-val" id="rptFixed">0</div><div class="rpt-stat-lbl">Appt Fixed</div></div>
+        </div>
+      </div>
+      <div class="rpt-section">
+        <div class="rpt-section-title">📋 Outcome Breakdown</div>
+        <div id="rptBreakdown"><div class="rpt-empty">No calls logged yet</div></div>
+      </div>
+      <button class="rpt-btn rpt-btn-dl" onclick="dlExcel()">⬇️ Download Excel Report</button>
+      <button class="rpt-btn rpt-btn-wa" onclick="waReport()">📤 Send via WhatsApp</button>
+    </div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <div class="bnav">
     <button class="ni on" id="navDash" onclick="switchPage('Dash')"><span class="ico">🏠</span>Home</button>
