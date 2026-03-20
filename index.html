@@ -247,8 +247,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .spinner{width:40px;height:40px;border:3px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loading-text{font-family:var(--fm);font-size:13px;color:var(--text2)}
-.toast{position:fixed;bottom:72px;left:50%;transform:translateX(-50%) translateY(80px);z-index:400;background:var(--text);color:#fff;border-radius:14px;padding:13px 22px;font-size:14px;font-weight:500;white-space:nowrap;box-shadow:var(--shadow-lg);transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none}
-.toast.show{transform:translateX(-50%) translateY(0)}
+.toast{position:fixed;bottom:76px;left:50%;transform:translateX(-50%) translateY(140px);z-index:400;background:var(--text);color:#fff;border-radius:14px;padding:13px 22px;font-size:14px;font-weight:500;white-space:nowrap;box-shadow:var(--shadow-lg);transition:transform .3s cubic-bezier(.4,0,.2,1);pointer-events:none;visibility:hidden}
+.toast.show{transform:translateX(-50%) translateY(0);visibility:visible}
 .toast.success{background:var(--green)}
 .toast.error{background:var(--red)}
 .section-header{padding:12px 16px 4px;font-family:var(--fh);font-size:14px;font-weight:700;color:var(--text);display:flex;align-items:center;justify-content:space-between}
@@ -449,6 +449,19 @@ const CLIENT_ID='LIVARA_CBE';
 const TC_TARGET=30;
 const TC_RATE=300;
 
+// ══ STAFF NAME LOOKUP ══
+const STAFF_NAMES={
+  // Telecallers
+  'TC_001':'Jamuna','TC_002':'Sudha','TC_003':'Sankari',
+  'TC_004':'Sabitha','TC_005':'Nithya','TC_006':'Priya','TC_007':'Jenifer',
+  // Executives
+  'EX_001':'Suresh','EX_002':'Santhosh','EX_003':'Nandha',
+  'EX_004':'Mano','EX_005':'Ganesh',
+  // Admin / Supervisor
+  'AD_001':'Arun','SV_001':'Gawtham','OW_001':'Stalin',
+};
+function staffName(id){return id?STAFF_NAMES[id]||id:'';}
+
 // ══ STATE ══
 let session=null, allAccounts=[], activeFilter='All', activeAccount=null, selectedOutcome='', tsInterval=null;
 
@@ -475,7 +488,7 @@ function showErr(m){const e=document.getElementById('loginError');e.textContent=
 function startApp(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('app').style.display='flex';
-  document.getElementById('headerBadge').textContent=session.staffId+' · '+session.city;
+  document.getElementById('headerBadge').textContent=(session.staffName||staffName(session.staffId)||session.staffId)+' · '+session.city;
   const h=new Date().getHours();
   document.getElementById('dashGreeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+(session.staffName||session.staffId);
   document.getElementById('dashDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -559,7 +572,8 @@ function buildCard(a){
   const scoreLabel=sc>=70?'🔥 High':sc>=40?'⚡ Med':'● Low';
   const strikes=Array.from({length:3}).map((_,i)=>`<div class="strike-dot" style="${i<(a.strikeCount||0)?'':'background:transparent;border:2px solid var(--border2);'}"></div>`).join('');
   const remarkHtml=a.tcRemark?`<div class="card-remark">💬 ${esc(a.tcRemark)}</div>`:'';
-  const execHtml=a.execStaffId?`<div class="card-exec">👷 Exec: ${esc(a.execStaffId)}</div>`:'';
+  const execDisplay=a.execName||(a.execStaffId?staffName(a.execStaffId):'');
+  const execHtml=execDisplay?`<div class="card-exec">👷 Exec: ${esc(execDisplay)}</div>`:'';
   return`<div class="account-card" onclick="openDetail('${a.accountNo}')">
     <div class="card-top">
       <div>
@@ -581,7 +595,7 @@ function buildCard(a){
       <button class="btn-sm btn-call" onclick="event.stopPropagation();callNum('${esc(a.mobile)}')">📞 Call</button>
       <button class="btn-sm btn-wa"   onclick="event.stopPropagation();openWA('${esc(a.mobile)}','${esc(a.name||'')}','${esc(a.accountNo)}')">💬 WA</button>
       <button class="btn-sm btn-log"  onclick="event.stopPropagation();openLog('${a.accountNo}')">✏️ Log</button>
-      <button class="btn-sm btn-nav"  onclick="event.stopPropagation();navigate('${esc(a.address||'')}')">🗺</button>
+      <button class="btn-sm btn-nav"  onclick="event.stopPropagation();navigate('${esc(a.address||'')}')">🧭 Navigate</button>
     </div>
   </div>`;
 }
@@ -615,7 +629,7 @@ function openDetail(accNo){
     <div class="detail-row"><div class="detail-icon">📞</div><div><div class="detail-phone-big">${esc(a.mobile||'—')}</div><div class="detail-val-sub">Customer Mobile</div></div></div>
     <div class="detail-row"><div class="detail-icon">📍</div><div><div class="detail-val">${esc(a.address||'—')}</div><div class="detail-val-sub">${esc(a.area||'')} · ${esc(a.city||'')}</div></div></div>
     ${a.apptDate?`<div class="detail-row"><div class="detail-icon">🗓</div><div><div class="detail-val" style="color:var(--green);font-weight:600">${esc(a.apptDate)}</div><div class="detail-val-sub">Appointment Date</div></div></div>`:''}
-    ${a.execStaffId?`<div class="detail-row"><div class="detail-icon">👷</div><div><div class="detail-val">${esc(a.execStaffId)}</div><div class="detail-val-sub">Assigned Executive</div></div></div>`:''}
+    ${(a.execName||a.execStaffId)?`<div class="detail-row"><div class="detail-icon">👷</div><div><div class="detail-val">${esc(a.execName||staffName(a.execStaffId))}</div><div class="detail-val-sub">Assigned Executive</div></div></div>`:''}
     ${a.tcRemark?`<div class="tc-bridge"><span style="font-size:20px">🗣</span><div><div class="tc-bridge-label">Last Remark</div><div class="tc-bridge-val">${esc(a.tcRemark)}</div></div></div>`:''}
     <div class="detail-section-title">Strike Status</div>
     <div class="strikes-row">
@@ -625,7 +639,7 @@ function openDetail(accNo){
     <div class="detail-action-row">
       <button class="btn-detail btn-call-big" onclick="callNum('${esc(a.mobile)}')">📞 Call</button>
       <button class="btn-detail btn-wa-big"   onclick="openWA('${esc(a.mobile)}','${esc(a.name||'')}','${esc(a.accountNo)}')">💬 WA</button>
-      <button class="btn-detail btn-nav-big"  onclick="navigate('${esc(a.address||'')}')">🗺 Navigate</button>
+      <button class="btn-detail btn-nav-big"  onclick="navigate('${esc(a.address||'')}')">🧭 Navigate</button>
     </div>
     <button class="btn-detail btn-log-big" style="width:100%;margin-top:10px" onclick="openLog('${a.accountNo}')">✏️ Log Call</button>`;
   openSheet();
@@ -751,8 +765,8 @@ async function loadEarnings(){
   // Leaderboard demo
   const lb=document.getElementById('earnLeaderboard');
   const lbData=[
-    {id:session.staffId,name:session.staffName||session.staffId,closures:closuresMTD,me:true},
-    ...['TC_002','TC_003','TC_004','TC_005','TC_006','TC_007'].filter(id=>id!==session.staffId).map((id,i)=>({id,name:id,closures:Math.max(0,closuresMTD+([3,-2,5,-1,4,-3][i]||0)),me:false}))
+    {id:session.staffId,name:session.staffName||staffName(session.staffId)||session.staffId,closures:closuresMTD,me:true},
+    ...['TC_002','TC_003','TC_004','TC_005','TC_006','TC_007'].filter(id=>id!==session.staffId).map((id,i)=>({id,name:staffName(id)||id,closures:Math.max(0,closuresMTD+([3,-2,5,-1,4,-3][i]||0)),me:false}))
   ].sort((a,b)=>b.closures-a.closures);
   const maxC=lbData[0].closures||1;
   lb.innerHTML=lbData.map((r,i)=>`
@@ -804,16 +818,16 @@ function demoAccounts(){
   const today=new Date().toISOString().slice(0,10);
   const yesterday=new Date(Date.now()-86400000).toISOString().slice(0,10);
   return[
-    {accountNo:'101000500001',name:'Rajesh Kumar',mobile:'9876543210',address:'12 RS Puram Main Rd',area:'RS Puram',city:'CBE',status:'Appt Fixed',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:today,recoveryScore:88,tcRemark:'Customer available morning',execStaffId:'EX_001'},
-    {accountNo:'101000500002',name:'Priya Suresh',mobile:'9876501234',address:'45 Tatabad Cross St',area:'Tatabad',city:'CBE',status:'Rescheduled',batchNo:'VOA_MAR_2026_1',strikeCount:1,apptDate:yesterday,recoveryScore:62,tcRemark:'Out of station, retry this week',execStaffId:'EX_002'},
-    {accountNo:'101000500003',name:'Murugan Selvam',mobile:'9843210987',address:'8 Gandhipuram Ring Rd',area:'Gandhipuram',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'',recoveryScore:45,tcRemark:'',execStaffId:''},
-    {accountNo:'101000500004',name:'Kavitha Rajan',mobile:'9791234567',address:'67 Peelamedu Lake View',area:'Peelamedu',city:'CBE',status:'Called',batchNo:'VOA_MAR_2026_1',strikeCount:2,apptDate:'',recoveryScore:35,tcRemark:'Try Sunday morning only',execStaffId:'EX_003'},
-    {accountNo:'101000500005',name:'Anand Krishnan',mobile:'9865432109',address:'23 Saibaba Colony',area:'Saibaba Colony',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'',recoveryScore:72,tcRemark:'',execStaffId:''},
-    {accountNo:'101000500006',name:'Sumathi R',mobile:'9755188200',address:'23 Gandhi Nagar, Peelamedu',area:'Peelamedu',city:'CBE',status:'Issue',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'',recoveryScore:20,tcRemark:'Refund issue pending with ACT',execStaffId:''},
-    {accountNo:'101000500007',name:'Ramkumar T',mobile:'9440012345',address:'14 Kamaraj St, RS Puram',area:'RS Puram',city:'CBE',status:'Appt Fixed',batchNo:'VOA_MAR_2026_2',strikeCount:0,apptDate:today,recoveryScore:91,tcRemark:'Very cooperative, fixed for 10am',execStaffId:'EX_001'},
-    {accountNo:'101000500008',name:'Vimala S',mobile:'9811244300',address:'22 Nehru Nagar, Peelamedu',area:'Peelamedu',city:'CBE',status:'Not Reachable',batchNo:'VOA_MAR_2026_2',strikeCount:0,apptDate:'',recoveryScore:30,tcRemark:'RNR 3 times',execStaffId:''},
-    {accountNo:'101000500009',name:'Saranya K',mobile:'9788433200',address:'25 Bharathi Park Rd',area:'Coimbatore North',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_2',strikeCount:0,apptDate:'',recoveryScore:55,tcRemark:'',execStaffId:''},
-    {accountNo:'101000500010',name:'Muthukumar P',mobile:'9443255000',address:'9 New Scheme Rd, Ganapathy',area:'Ganapathy',city:'CBE',status:'Called',batchNo:'VOA_MAR_2026_2',strikeCount:1,apptDate:'',recoveryScore:42,tcRemark:'Busy, callback tomorrow',execStaffId:''},
+    {accountNo:'101000500001',name:'Rajesh Kumar',mobile:'9876543210',address:'12 RS Puram Main Rd',area:'RS Puram',city:'CBE',status:'Appt Fixed',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:today,recoveryScore:88,tcRemark:'Customer available morning',execStaffId:'EX_001',execName:'Suresh'},
+    {accountNo:'101000500002',name:'Priya Suresh',mobile:'9876501234',address:'45 Tatabad Cross St',area:'Tatabad',city:'CBE',status:'Rescheduled',batchNo:'VOA_MAR_2026_1',strikeCount:1,apptDate:yesterday,recoveryScore:62,tcRemark:'Out of station, retry this week',execStaffId:'EX_002',execName:'Santhosh'},
+    {accountNo:'101000500003',name:'Murugan Selvam',mobile:'9843210987',address:'8 Gandhipuram Ring Rd',area:'Gandhipuram',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'',recoveryScore:45,tcRemark:'',execStaffId:'',execName:''},
+    {accountNo:'101000500004',name:'Kavitha Rajan',mobile:'9791234567',address:'67 Peelamedu Lake View',area:'Peelamedu',city:'CBE',status:'Called',batchNo:'VOA_MAR_2026_1',strikeCount:2,apptDate:'',recoveryScore:35,tcRemark:'Try Sunday morning only',execStaffId:'EX_003',execName:'Nandha'},
+    {accountNo:'101000500005',name:'Anand Krishnan',mobile:'9865432109',address:'23 Saibaba Colony',area:'Saibaba Colony',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'',recoveryScore:72,tcRemark:'',execStaffId:'',execName:''},
+    {accountNo:'101000500006',name:'Sumathi R',mobile:'9755188200',address:'23 Gandhi Nagar, Peelamedu',area:'Peelamedu',city:'CBE',status:'Issue',batchNo:'VOA_MAR_2026_1',strikeCount:0,apptDate:'',recoveryScore:20,tcRemark:'Refund issue pending with ACT',execStaffId:'',execName:''},
+    {accountNo:'101000500007',name:'Ramkumar T',mobile:'9440012345',address:'14 Kamaraj St, RS Puram',area:'RS Puram',city:'CBE',status:'Appt Fixed',batchNo:'VOA_MAR_2026_2',strikeCount:0,apptDate:today,recoveryScore:91,tcRemark:'Very cooperative, fixed for 10am',execStaffId:'EX_001',execName:'Suresh'},
+    {accountNo:'101000500008',name:'Vimala S',mobile:'9811244300',address:'22 Nehru Nagar, Peelamedu',area:'Peelamedu',city:'CBE',status:'Not Reachable',batchNo:'VOA_MAR_2026_2',strikeCount:0,apptDate:'',recoveryScore:30,tcRemark:'RNR 3 times',execStaffId:'',execName:''},
+    {accountNo:'101000500009',name:'Saranya K',mobile:'9788433200',address:'25 Bharathi Park Rd',area:'Coimbatore North',city:'CBE',status:'Fresh',batchNo:'VOA_MAR_2026_2',strikeCount:0,apptDate:'',recoveryScore:55,tcRemark:'',execStaffId:'',execName:''},
+    {accountNo:'101000500010',name:'Muthukumar P',mobile:'9443255000',address:'9 New Scheme Rd, Ganapathy',area:'Ganapathy',city:'CBE',status:'Called',batchNo:'VOA_MAR_2026_2',strikeCount:1,apptDate:'',recoveryScore:42,tcRemark:'Busy, callback tomorrow',execStaffId:'',execName:''},
   ];
 }
 
