@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="TC App">
+<meta name="theme-color" content="#f97316">
+<link rel="manifest" href="data:application/manifest+json,{%22name%22:%22VOATelecallerConsole%22,%22short_name%22:%22TCApp%22,%22start_url%22:%22./%22,%22display%22:%22standalone%22,%22background_color%22:%22#ffffff%22,%22theme_color%22:%22#f97316%22,%22orientation%22:%22portrait%22,%22icons%22:[{%22src%22:%22https://via.placeholder.com/192/f97316/ffffff?text=📞%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>VOA Telecaller Console</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
@@ -630,6 +636,7 @@ const ISSUE_STATUSES=['Refund Issue','Reconnection','Mail Confirmation','Junctio
 
 function renderList(){
   const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  allAccounts.sort(function(a,b){return(parseFloat(b.ageing_hours)||0)-(parseFloat(a.ageing_hours)||0);});
   const list=allAccounts.filter(a=>{
     let matchF=true;
     if(activeFilter==='__ISSUES__')matchF=ISSUE_STATUSES.some(s=>a.status===s||a.status?.includes('Issue'));
@@ -654,7 +661,8 @@ function buildCard(a){
   const remarkHtml=a.tcRemark?`<div class="card-remark">💬 ${esc(a.tcRemark)}</div>`:'';
   const execDisplay=a.execName||(a.execStaffId?staffName(a.execStaffId):'');
   const execHtml=execDisplay?`<div class="card-exec">👷 Exec: ${esc(execDisplay)}</div>`:'';
-  return`<div class="account-card" onclick="openDetail('${a.accountNo}')">
+  var _ab=(parseFloat(a.ageing_hours)||0)>48?'border:2px solid #dc2626;':'';
+  return`<div class="account-card" style="${_ab}" onclick="openDetail('${a.accountNo}')">
     <div class="card-top">
       <div>
         <div class="card-accno">${esc(a.accountNo)}</div>
@@ -677,6 +685,7 @@ function buildCard(a){
       <button class="btn-sm btn-log"  onclick="event.stopPropagation();openLog('${a.accountNo}')">✏️ Log</button>
       <button class="btn-sm btn-nav"  onclick="event.stopPropagation();navigate('${esc(a.address||'')}')">🧭 Navigate</button>
     </div>
+    <div style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border);font-size:12px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;"><div><b style="color:var(--text3)">Owner:</b> <span style="font-family:var(--fm);color:var(--text2)">${(a.currentOwner||a.CURRENT_OWNER||'NA')}</span></div><div style="color:${getAgeColor(a.ageing_hours)};"><b>Ageing:</b> ${(a.ageing_hours||0)}h&nbsp;<span style="font-size:10px">${getAgeBucket(a.ageing_hours)}</span></div></div>
   </div>`;
 }
 
@@ -693,6 +702,11 @@ function sClass(s){
   return 's-default';
 }
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+
+// ── v1.3.1 ACCOUNTABILITY HELPERS ───────────────────────────
+function getAgeColor(hours){var h=parseFloat(hours)||0;if(h>48)return'#dc2626';if(h>24)return'#ea580c';if(h>12)return'#d97706';return'#16a34a';}
+function getAgeBucket(hours){var h=parseFloat(hours)||0;if(h>48)return'🔴 Critical';if(h>24)return'🟠 Delayed';if(h>12)return'🟡 Attention';return'🟢 Fresh';}
+// ── end v1.3.1 ──────────────────────────────────────────────
 
 // ══ DETAIL SHEET ══
 function openDetail(accNo){
@@ -1006,6 +1020,26 @@ function showLoader(t){document.getElementById('loaderText').textContent=t||'Loa
 function hideLoader(){document.getElementById('loader').classList.remove('show');}
 let _tt;
 function toast(msg,type){clearTimeout(_tt);const el=document.getElementById('toast');el.textContent=msg;el.className='toast '+(type||'');requestAnimationFrame(()=>el.classList.add('show'));_tt=setTimeout(()=>el.classList.remove('show'),3000);}
+
+// ── TOKEN AUTO-REFRESH ── v1.3.0
+// Silently refreshes session token 5 min before expiry
+// Prevents sudden logout mid-session
+function _startTokenRefresh() {
+  if (!session || !session.token) return;
+  // Refresh every 25 minutes (session TTL is 30 min)
+  setInterval(async function() {
+    try {
+      var res = await api({action:'refresh_token', token: session.token});
+      if (res.success && res.data && res.data.token) {
+        session.token = res.data.token;
+      } else {
+        // Token refresh failed — logout gracefully
+        doLogout();
+      }
+    } catch(e) {}
+  }, 25 * 60 * 1000);
+}
+
 function doLogout(){session=null;allAccounts=[];document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';}
 
 // ══ DEMO DATA ══
