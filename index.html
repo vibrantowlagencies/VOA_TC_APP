@@ -411,11 +411,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       <div class="earn-hero">
         <div class="earn-hero-label">Estimated Payout This Month</div>
         <div class="earn-hero-total" id="earnTotal">₹0</div>
-        <div class="earn-hero-sub" id="earnSub">0 closures × ₹300 per collection</div>
+        <div class="earn-hero-sub" id="earnSub">Loading incentive config...</div>
         <div class="earn-progress-bar-outer">
           <div class="earn-progress-bar-inner" id="earnBar" style="width:0%"></div>
         </div>
-        <div class="earn-bar-labels"><span>₹0</span><span id="earnBarMax">Target: ₹9,000</span></div>
+        <div class="earn-bar-labels"><span>₹0</span><span id="earnBarMax">Target: —</span></div>
       </div>
 
       <div class="earn-kpi">
@@ -428,11 +428,11 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
         <div class="earn-card-title">📊 Incentive Structure</div>
         <div class="slab-row">
           <div class="slab-label">Per Collection (Verified)</div>
-          <div class="slab-rate">₹300</div>
+          <div class="slab-rate" id="tcRateDisplay">—</div>
         </div>
         <div class="slab-row">
           <div class="slab-label">Fraud Penalty (confirmed)</div>
-          <div class="slab-rate" style="color:var(--red)">-₹500</div>
+          <div class="slab-rate" style="color:var(--red)" id="tcFraudDisplay">—</div>
         </div>
         <div id="earnNudgeBox" class="nudge-box" style="display:none">
           <span style="font-size:20px">🚀</span>
@@ -499,7 +499,8 @@ const CLIENT_ID='LIVARA_CBE';
 let LIVE_CONFIG = null;
 // These are fallback defaults — overridden by API response on login
 let TC_TARGET = 30;
-let TC_RATE   = 300;
+let TC_RATE   = null;  // Set by API — no hardcode
+let TC_FRAUD_PENALTY = null;  // Set by API — no hardcode
 
 async function loadIncentiveConfig() {
   try {
@@ -507,8 +508,16 @@ async function loadIncentiveConfig() {
     if (res.success && res.data) {
       LIVE_CONFIG = res.data;
       TC_TARGET   = res.data.tcTarget    || 30;
-      TC_RATE     = res.data.tcRate      || 300;
+      TC_RATE     = res.data.tcRate;
+      if(!TC_RATE){ TC_RATE=null; console.error('[Config] tcRate missing from API'); }
+      TC_FRAUD_PENALTY = res.data.tcFraudPenalty;
+      if(!TC_FRAUD_PENALTY && TC_FRAUD_PENALTY !== 0){ TC_FRAUD_PENALTY=null; console.error('[Config] tcFraudPenalty missing from API'); }
       console.log('Incentive config loaded — TC target:', TC_TARGET, 'rate:', TC_RATE);
+      // Update displayed rate in Earnings tab
+      var rateEl = document.getElementById('tcRateDisplay');
+      if (rateEl) rateEl.textContent = '₹' + TC_RATE;
+      var fraudEl = document.getElementById('tcFraudDisplay');
+      if (fraudEl) fraudEl.textContent = '-₹' + TC_FRAUD_PENALTY;
     }
   } catch(e) {
     console.warn('Could not load incentive config, using defaults:', e.message);
@@ -841,6 +850,7 @@ async function loadEarnings(){
   const res=await api({action:'get_tc_incentive_data',city:session.city,staffId:session.staffId});
   hideLoader();
   const closuresMTD=res.success?(res.data?.closuresMTD||0):allAccounts.filter(a=>a.status==='Collected').length;
+  if(TC_RATE === null){ document.getElementById('earnTotal').textContent='Config Missing'; document.getElementById('earnSub').textContent='Incentive config not loaded'; return; }
   const earn=closuresMTD*TC_RATE;
   const pct=Math.min(100,Math.round((closuresMTD/TC_TARGET)*100));
   const targetEarn=TC_TARGET*TC_RATE;
@@ -982,7 +992,7 @@ function dlExcel(){
       ['OUTCOME BREAKDOWN','COUNT'],
       ...Object.entries(s.breakdown).sort((a,b)=>b[1]-a[1]),
       ['',''],
-      ['Est. Incentive (₹300 × Fixed)','₹'+(s.fixed*300).toLocaleString('en-IN')],
+      ['Est. Incentive (₹'+TC_RATE+' × Fixed)','₹'+(s.fixed*TC_RATE).toLocaleString('en-IN')],
     ];
     const ws2 = XLSX.utils.aoa_to_sheet(sumRows);
     ws2['!cols']=[{wch:32},{wch:16}];
@@ -1006,7 +1016,7 @@ function waReport(){
     '✅ Appt Fixed: '+s.fixed+'\n'+
     '🔄 Pending: '+s.fresh+'\n'+
     '📈 Conversion: '+s.conv+'%\n'+
-    '💰 Est. Incentive: ₹'+(s.fixed*300).toLocaleString('en-IN')
+    '💰 Est. Incentive: ₹'+(s.fixed*TC_RATE).toLocaleString('en-IN')
   );
   window.open('https://wa.me/?text='+msg,'_blank');
 }
