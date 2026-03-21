@@ -498,7 +498,7 @@ const CLIENT_ID='LIVARA_CBE';
 // ══ LIVE INCENTIVE CONFIG (loaded from API on login) ══
 let LIVE_CONFIG = null;
 // These are fallback defaults — overridden by API response on login
-let TC_TARGET = 30;
+let TC_TARGET = null;  // Set by API — no hardcode
 let TC_RATE   = null;  // Set by API — no hardcode
 let TC_FRAUD_PENALTY = null;  // Set by API — no hardcode
 
@@ -507,7 +507,8 @@ async function loadIncentiveConfig() {
     const res = await api({action:'get_incentive_config', city:session.city, staffId:session.staffId});
     if (res.success && res.data) {
       LIVE_CONFIG = res.data;
-      TC_TARGET   = res.data.tcTarget    || 30;
+      TC_TARGET   = res.data.tcTarget;
+      if(!TC_TARGET){ TC_TARGET=null; console.error('[Config] tcTarget missing from API'); }
       TC_RATE     = res.data.tcRate;
       if(!TC_RATE){ TC_RATE=null; console.error('[Config] tcRate missing from API'); }
       TC_FRAUD_PENALTY = res.data.tcFraudPenalty;
@@ -850,7 +851,7 @@ async function loadEarnings(){
   const res=await api({action:'get_tc_incentive_data',city:session.city,staffId:session.staffId});
   hideLoader();
   const closuresMTD=res.success?(res.data?.closuresMTD||0):allAccounts.filter(a=>a.status==='Collected').length;
-  if(TC_RATE === null){ document.getElementById('earnTotal').textContent='Config Missing'; document.getElementById('earnSub').textContent='Incentive config not loaded'; return; }
+  if(TC_RATE === null || TC_TARGET === null){ document.getElementById('earnTotal').textContent='Config Missing'; document.getElementById('earnSub').textContent='Incentive config not loaded'; return; }
   const earn=closuresMTD*TC_RATE;
   const pct=Math.min(100,Math.round((closuresMTD/TC_TARGET)*100));
   const targetEarn=TC_TARGET*TC_RATE;
