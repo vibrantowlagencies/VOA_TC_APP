@@ -491,6 +491,23 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 </div>
 
 <script>
+// ============================================================
+// FILE    : TC_App_v1.5.3.html
+// Version : 1.5.3
+// Updated : 2026-03-22
+// Changes :
+//   v1.5.3 - Session persistence added
+//            - Login session saved to localStorage
+//            - Back button / page refresh no longer logs out
+//            - Token expiry auto-checked on restore
+//            - Logout clears session from localStorage
+//   v1.5.2 - Unified production release
+//            - TC_RATE, TC_TARGET, TC_FRAUD_PENALTY hardcodes removed
+//            - All incentive values now API-driven from Incentive_Config
+//            - Excel and WhatsApp reports use live rates
+//            - Config Missing error state added
+// ============================================================
+
 // ══ CONFIG ══
 const API_URL='https://script.google.com/macros/s/AKfycbwsGJ0HI7smnWk-3Cpcno6BJbRwbWHe3ZaAhPavTmHE4IrIG9Kk0t_7mQqh9x_fTHnI/exec';
 const CLIENT_ID='LIVARA_CBE';
@@ -577,7 +594,7 @@ async function doLogin(){
   hideLoader();
   if(!res.success){showErr(res.error||'Login failed');return;}
   if(res.data.role!=='TELECALLER'){showErr('Access denied — Telecaller login only');return;}
-  session=res.data; startApp();
+  session=res.data; try{localStorage.setItem("voa_session_tc", JSON.stringify(session));}catch(e){} startApp();
 }
 function showErr(m){const e=document.getElementById('loginError');e.textContent=m;e.style.display='block';}
 
@@ -1051,7 +1068,7 @@ function _startTokenRefresh() {
   }, 25 * 60 * 1000);
 }
 
-function doLogout(){session=null;allAccounts=[];document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';}
+function doLogout(){session=null; try{localStorage.removeItem("voa_session_tc");}catch(e){}allAccounts=[];document.getElementById('app').style.display='none';document.getElementById('loginScreen').style.display='flex';document.getElementById('loginPin').value='';}
 
 // ══ DEMO DATA ══
 function demoAccounts(){
@@ -1072,6 +1089,64 @@ function demoAccounts(){
 }
 
 document.getElementById('loginPin').addEventListener('keyup',e=>{if(e.key==='Enter')doLogin();});
+
+// ── SESSION RESTORE ─────────────────────────────────────
+// Restore session from localStorage on page load / back navigation
+(function restoreSession() {
+  try {
+    var stored = localStorage.getItem("voa_session_tc");
+    if (!stored) return;
+    var saved = JSON.parse(stored);
+    if (!saved || !saved.token) return;
+
+    // Validate token is not expired (token format: staffId|role|city|clientId|expires)
+    var parts = saved.token.split('|');
+    if (parts.length < 5) { localStorage.removeItem("voa_session_tc"); return; }
+    var expires = parseInt(parts[4]);
+    if (isNaN(expires) || Date.now() > expires) {
+      localStorage.removeItem("voa_session_tc");
+      console.log('[Session] Token expired — showing login');
+      return;
+    }
+
+    // Valid session — restore and skip login
+    session = saved;
+    console.log('[Session] Restored for', session.staffId);
+    if (typeof startApp === 'function') {
+      startApp();
+    } else if (typeof initApp === 'function') {
+      initApp();
+    }
+  } catch(e) {
+    console.warn('[Session] Restore failed:', e.message);
+  }
+})();
+
+// ── SESSION RESTORE ──────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    var stored = localStorage.getItem("voa_session_tc");
+    if (!stored) return;
+    var saved = JSON.parse(stored);
+    if (!saved || !saved.token) return;
+
+    // Check token expiry
+    var parts = saved.token.split('|');
+    if (parts.length < 5) { localStorage.removeItem("voa_session_tc"); return; }
+    var expires = parseInt(parts[4]);
+    if (isNaN(expires) || Date.now() > expires) {
+      localStorage.removeItem("voa_session_tc");
+      return;
+    }
+
+    // Valid — restore session and skip login
+    session = saved;
+    if (typeof startApp === 'function') startApp();
+    else if (typeof initApp === 'function') initApp();
+  } catch(e) {
+    try { localStorage.removeItem("voa_session_tc"); } catch(e2) {}
+  }
+});
 </script>
 </body>
 </html>
