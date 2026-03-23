@@ -279,6 +279,10 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .rpt-btn-wa{background:linear-gradient(135deg,#25D366,#128C7E);color:#fff}
 .rpt-btn:active{transform:scale(.97)}
 .rpt-empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:13px;font-family:var(--fm)}
+
+/* ── CITY DISPLAY (v1.6.1) ── */
+.city-assigned-badge{font-family:var(--fm);font-size:11px;color:var(--blue);background:var(--blue-lt);padding:4px 10px;border-radius:8px;border:1px solid #bfdbfe;font-weight:700;letter-spacing:.3px;}
+
 </style>
 </head>
 <body>
@@ -293,13 +297,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
       <div class="login-logo">VOA</div>
       <div class="login-title">Telecaller Console</div>
       <div class="login-sub">Vibrant Owl Agencies — Recovery Operations</div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">City</label>
-      <select class="form-select" id="loginCity">
-        <option value="CBE">Coimbatore (CBE)</option>
-        <option value="CHN">Chennai (CHN)</option>
-      </select>
     </div>
     <div class="form-group">
       <label class="form-label">Staff ID</label>
@@ -324,7 +321,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
     </div>
     <div class="hdr-right">
       <div class="staff-badge" id="headerBadge">TC_000</div>
-      <button class="logout-btn" onclick="doLogout()">✕</button>
+      <div class="city-assigned-badge" id="cityAssignedBadge" style="display:none;">CBE</div>
+      <button class="logout-btn" onclick="doLogout()">&#x2715;</button>
     </div>
   </div>
 
@@ -492,20 +490,19 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 
 <script>
 // ============================================================
-// FILE    : TC_App_v1.5.3.html
-// Version : 1.5.3
-// Updated : 2026-03-22
+// FILE    : TC_App_v1.6.1.html
+// Version : 1.6.1
+// Updated : 2026-03-23
 // Changes :
-//   v1.5.3 - Session persistence added
-//            - Login session saved to localStorage
-//            - Back button / page refresh no longer logs out
-//            - Token expiry auto-checked on restore
-//            - Logout clears session from localStorage
-//   v1.5.2 - Unified production release
-//            - TC_RATE, TC_TARGET, TC_FRAUD_PENALTY hardcodes removed
-//            - All incentive values now API-driven from Incentive_Config
-//            - Excel and WhatsApp reports use live rates
-//            - Config Missing error state added
+//   v1.6.1 - City control model — TC sees assigned city only
+//            - City toggle REMOVED from header
+//            - City dropdown REMOVED from login
+//            - "Assigned to: CBE/CHN" badge shown in header
+//            - TC city is controlled by Admin via backend
+//            - TC cannot change or filter by city
+//   v1.6.0 - Smart Allocation Engine + City Toggle
+//   v1.5.3 - Session persistence (back button fix)
+//   v1.5.2 - Incentive hardcodes removed, API-driven
 // ============================================================
 
 // ══ CONFIG ══
@@ -584,7 +581,7 @@ async function apiPost(action,body){
 
 // ══ LOGIN ══
 async function doLogin(){
-  const city=document.getElementById('loginCity').value;
+  const city='CBE'; // TODO: Make city dynamic when CHN goes live (BUG-04 — v1.6.2)
   const staffId=document.getElementById('loginStaffId').value.trim().toUpperCase();
   const pin=document.getElementById('loginPin').value.trim();
   document.getElementById('loginError').style.display='none';
@@ -594,14 +591,18 @@ async function doLogin(){
   hideLoader();
   if(!res.success){showErr(res.error||'Login failed');return;}
   if(res.data.role!=='TELECALLER'){showErr('Access denied — Telecaller login only');return;}
-  session=res.data; try{localStorage.setItem("voa_session_tc", JSON.stringify(session));}catch(e){} startApp();
+  session=res.data; try{localStorage.setItem("voa_session_tc", JSON.stringify(session));}catch(e){}
+  startApp();
 }
 function showErr(m){const e=document.getElementById('loginError');e.textContent=m;e.style.display='block';}
 
 function startApp(){
   document.getElementById('loginScreen').style.display='none';
   document.getElementById('app').style.display='flex';
-  document.getElementById('headerBadge').textContent=(session.staffName||staffName(session.staffId)||session.staffId)+' · '+session.city;
+  document.getElementById('headerBadge').textContent=(session.staffName||staffName(session.staffId)||session.staffId);
+  // Show assigned city badge
+  var cityBadge=document.getElementById('cityAssignedBadge');
+  if(cityBadge){cityBadge.textContent='Assigned to: '+(session.city||'CBE');cityBadge.style.display='block';}
   const h=new Date().getHours();
   document.getElementById('dashGreeting').textContent=(h<12?'Good morning':h<17?'Good afternoon':'Good evening')+', '+(session.staffName||session.staffId);
   document.getElementById('dashDate').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
@@ -1141,12 +1142,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Valid — restore session and skip login
     session = saved;
-    if (typeof startApp === 'function') startApp();
+    if (typeof startApp === 'function') { startApp(); }
     else if (typeof initApp === 'function') initApp();
   } catch(e) {
     try { localStorage.removeItem("voa_session_tc"); } catch(e2) {}
   }
 });
+
+
 </script>
 </body>
 </html>
