@@ -490,8 +490,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 
 <script>
 // ============================================================
-// FILE    : TC_App_v1.6.1.html
-// Version : 1.6.1
+// FILE    : TC_App_v1.6.2.html
+// Version : 1.6.2
 // Updated : 2026-03-23
 // Changes :
 //   v1.6.1 - City control model — TC sees assigned city only
@@ -697,7 +697,7 @@ function buildCard(a){
         <div class="card-name">${esc(a.name||'—')}</div>
         <div class="card-phone">📞 ${esc(a.mobile||'—')}</div>
       </div>
-      <span class="status-badge ${sClass(a.status)}">${esc(a.status||'FRESH')}</span>
+      <span class="status-badge ${sClass(a.status)}">${esc((!a.status||a.status==='ADMIN_ROLE'||a.status==='UNKNOWN')?'Fresh':a.status)}</span>
     </div>
     <div class="card-addr">📍 ${esc(a.address||'—')}</div>
     ${remarkHtml}${execHtml}
@@ -738,7 +738,7 @@ function getAgeBucket(hours){var h=parseFloat(hours)||0;if(h>48)return'🔴 Crit
 
 // ══ DETAIL SHEET ══
 function openDetail(accNo){
-  const a=allAccounts.find(x=>x.accountNo===accNo);if(!a)return;activeAccount=a;
+  const a=allAccounts.find(x=>String(x.accountNo)===String(accNo));if(!a)return;activeAccount=a;
   document.getElementById('sheetTitle').textContent=a.accountNo;
   const sc=a.recoveryScore||0;
   const scoreClass=sc>=70?'score-hi':sc>=40?'score-md':'score-lo';
@@ -776,7 +776,7 @@ const OUTCOMES=[
 ];
 
 function openLog(accNo){
-  const a=allAccounts.find(x=>x.accountNo===accNo);if(!a)return;activeAccount=a;selectedOutcome='';
+  const a=allAccounts.find(x=>String(x.accountNo)===String(accNo));if(!a)return;activeAccount=a;selectedOutcome='';
   if(tsInterval)clearInterval(tsInterval);
   document.getElementById('sheetTitle').textContent='Log Call — '+accNo;
   const nowStr=()=>new Date().toLocaleString('en-IN',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
@@ -821,7 +821,7 @@ async function submitLog(){
   hideLoader();
   if(res.success){
     toast('Call logged — '+selectedOutcome,'success');
-    const idx=allAccounts.findIndex(x=>x.accountNo===activeAccount.accountNo);
+    const idx=allAccounts.findIndex(x=>String(x.accountNo)===String(activeAccount.accountNo));
     if(idx!==-1){
       allAccounts[idx].status=selectedOutcome;
       if(apptDate)allAccounts[idx].apptDate=apptDate;
